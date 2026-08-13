@@ -22,7 +22,7 @@ Many AI language sessions end as isolated chats. Language Learning Coach is desi
 
 ## Core capabilities
 
-- First-time onboarding that starts with one exact question: **`你要学习什么语言？`** (“What language do you want to learn?”)
+- First-time onboarding that starts with one exact question: **`What language do you want to learn?`**
 - Adaptive daily lessons, five-minute maintenance, deep study, and real-world debrief modes.
 - Listening and pronunciation practice with reliable audio and honest tool limitations.
 - Video-first adaptation for signed languages, including manual and non-manual features.
@@ -71,7 +71,7 @@ Use $language-learning-coach to help me learn a language.
 If you have not named a language, its first reply contains only:
 
 ```text
-你要学习什么语言？
+What language do you want to learn?
 ```
 
 You can also begin with a concrete goal:

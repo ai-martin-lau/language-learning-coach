@@ -22,7 +22,7 @@ Muchas sesiones de idiomas con IA terminan como conversaciones aisladas. Languag
 
 ## Funciones principales
 
-- Incorporación inicial que empieza con una única pregunta exacta: **`你要学习什么语言？`** («¿Qué idioma quieres aprender?»)
+- Incorporación inicial que empieza con una única pregunta exacta: **`¿Qué idioma quieres aprender?`**
 - Lecciones diarias adaptativas, mantenimiento de cinco minutos, estudio profundo y revisión de experiencias reales.
 - Práctica de comprensión oral y pronunciación con audio fiable y límites honestos sobre las herramientas.
 - Adaptación basada en vídeo para lenguas de signos, incluidos los componentes manuales y no manuales.
@@ -71,7 +71,7 @@ Usa $language-learning-coach para ayudarme a aprender un idioma.
 Si no has indicado un idioma, su primera respuesta solo contiene:
 
 ```text
-你要学习什么语言？
+¿Qué idioma quieres aprender?
 ```
 
 También puedes empezar con un objetivo concreto:
