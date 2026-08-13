@@ -24,7 +24,7 @@
 
 - 首次建档只从一个问题开始：**“你要学习什么语言？”**
 - 支持自适应日课、五分钟最低维护、深度学习和真实实战复盘。
-- 使用可靠音频训练听辨和发音，并诚实说明工具无法判断的部分。
+- 有声语言先听后看；明确标注 TTS，并在交付前验证本地 WAV 的结构、时长、完整性和有效信号。
 - 为手语切换到视频优先流程，覆盖手控和非手控特征。
 - 训练实用语法、主动词汇、对话、阅读、写作及考试目标。
 - 通过延迟提取和迁移检查，从 `new` 到 `retained` 使用六级表现证据。
@@ -34,7 +34,7 @@
 
 ## 使用条件与安装
 
-你需要支持本地 Skill 的 Codex。使用内置安装器需要 Python 3；使用 clone 方式需要 Git。
+你需要支持本地 Skill 的 Codex，并安装 Python 3 以验证本地音频。内置验证器只接受传统未压缩 RIFF PCM WAV，其他音频格式需先转换；使用 clone 方式还需要 Git。
 
 ### 使用 Codex 内置 Skill 安装器
 
@@ -149,6 +149,8 @@ language-learning/<language-slug>/
 │   ├── evidence-and-guardrails.md   # 二语习得研究与科学边界
 │   ├── language-adaptation.md       # 跨语言特征适配
 │   └── session-protocols.md         # 课程、反馈、复测和状态协议
+├── scripts/validate_audio.py        # 本地 PCM WAV 交付验证器
+├── tests/test_validate_audio.py     # 验证器回归测试
 └── docs/plans/                      # 设计记录
 ```
 
