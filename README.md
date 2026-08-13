@@ -24,7 +24,7 @@ Many AI language sessions end as isolated chats. Language Learning Coach is desi
 
 - First-time onboarding that starts with one exact question: **`What language do you want to learn?`**
 - Adaptive daily lessons, five-minute maintenance, deep study, and real-world debrief modes.
-- Listening and pronunciation practice with reliable audio and honest tool limitations.
+- Audio-first listening and pronunciation practice, with explicit TTS labels and local WAV structure and signal validation.
 - Video-first adaptation for signed languages, including manual and non-manual features.
 - Practical grammar, active vocabulary, conversation, reading, writing, and exam-focused work.
 - Delayed retrieval and transfer checks with six evidence states from `new` to `retained`.
@@ -34,7 +34,7 @@ Many AI language sessions end as isolated chats. Language Learning Coach is desi
 
 ## Requirements and installation
 
-You need Codex with local Skill support. Python 3 is required for the bundled installer method, while the clone method requires Git.
+You need Codex with local Skill support and Python 3 for local audio validation. The bundled validator accepts classic uncompressed RIFF PCM WAV; convert other audio formats before validation. The clone method also requires Git.
 
 ### Install with the bundled Skill installer
 
@@ -150,6 +150,8 @@ The coach does **not** promise fluency in a fixed number of days, a native accen
 │   ├── evidence-and-guardrails.md   # SLA research and scientific limits
 │   ├── language-adaptation.md       # Cross-language feature adaptation
 │   └── session-protocols.md         # Lessons, feedback, review, and state
+├── scripts/validate_audio.py        # Local PCM WAV delivery validator
+├── tests/test_validate_audio.py     # Validator regression tests
 └── docs/plans/                      # Design records
 ```
 

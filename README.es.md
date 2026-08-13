@@ -24,7 +24,7 @@ Muchas sesiones de idiomas con IA terminan como conversaciones aisladas. Languag
 
 - Incorporación inicial que empieza con una única pregunta exacta: **`¿Qué idioma quieres aprender?`**
 - Lecciones diarias adaptativas, mantenimiento de cinco minutos, estudio profundo y revisión de experiencias reales.
-- Práctica de comprensión oral y pronunciación con audio fiable y límites honestos sobre las herramientas.
+- Práctica de comprensión oral y pronunciación que presenta primero el audio, identifica claramente el TTS y valida la estructura, duración, integridad y señal del WAV local antes de entregarlo.
 - Adaptación basada en vídeo para lenguas de signos, incluidos los componentes manuales y no manuales.
 - Gramática práctica, vocabulario activo, conversación, lectura, escritura y preparación específica para exámenes.
 - Comprobaciones diferidas de recuperación y transferencia con seis estados de evidencia, desde `new` hasta `retained`.
@@ -34,7 +34,7 @@ Muchas sesiones de idiomas con IA terminan como conversaciones aisladas. Languag
 
 ## Requisitos e instalación
 
-Necesitas Codex con compatibilidad para Skills locales. Git es necesario para el método manual y Python 3 para el método que utiliza el instalador incluido.
+Necesitas Codex con compatibilidad para Skills locales y Python 3 para validar el audio local. El validador incluido solo acepta WAV RIFF PCM clásico sin compresión; convierte antes los demás formatos. El método con Git también requiere Git.
 
 ### Instalar con el instalador de Skills incluido
 
@@ -150,6 +150,8 @@ El coach **no** promete fluidez en un número fijo de días, un acento nativo, i
 │   ├── evidence-and-guardrails.md   # Investigación sobre adquisición de segundas lenguas y límites científicos
 │   ├── language-adaptation.md       # Adaptación según características lingüísticas
 │   └── session-protocols.md         # Lecciones, feedback, repaso y estado
+├── scripts/validate_audio.py        # Validador previo de WAV PCM local
+├── tests/test_validate_audio.py     # Pruebas de regresión del validador
 └── docs/plans/                      # Registros de diseño
 ```
 
