@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="460" viewBox="0 0 1280 460" role="img" aria-labelledby="lessonStoryboardTitle lessonStoryboardDesc">
+  <title id="lessonStoryboardTitle">Travel lesson feedback storyboard</title>
+  <desc id="lessonStoryboardDesc">Four wordless panels show a traveler hearing a complete spoken model, completing a hotel counter task, focusing on one correction, and immediately retrying after the condition changes.</desc>
+
+  <defs>
+    <linearGradient id="canvasWash" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFF8EC"/>
+      <stop offset="1" stop-color="#E8B875" stop-opacity="0.28"/>
+    </linearGradient>
+    <linearGradient id="panelOneWash" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E8B875" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#FFF8EC"/>
+    </linearGradient>
+    <linearGradient id="panelTwoWash" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2A8C88" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#FFF8EC"/>
+    </linearGradient>
+    <linearGradient id="panelThreeWash" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#EF6A50" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#FFF8EC"/>
+    </linearGradient>
+    <linearGradient id="panelFourWash" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#17384A" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#FFF8EC"/>
+    </linearGradient>
+    <filter id="softShadow" x="-15%" y="-15%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#17384A" flood-opacity="0.12"/>
+    </filter>
+    <marker id="tealArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 8 4 0 8Z" fill="#2A8C88"/>
+    </marker>
+    <marker id="coralArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0 8 4 0 8Z" fill="#EF6A50"/>
+    </marker>
+
+    <g id="travelerFacingRight" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M-22-56C-39-52-43-26-39-2L-11-2-5-52Z" fill="#EF6A50"/>
+      <path d="M-38-41-47-22M-39-12-49-8" fill="none" stroke="#17384A" stroke-width="4"/>
+      <circle cx="0" cy="-73" r="17" fill="#E8B875"/>
+      <path d="M-17-76C-14-96 13-98 19-79 11-83 6-88-3-84-8-81-11-77-17-76Z" fill="#17384A"/>
+      <path d="M16-74 23-70 16-66Z" fill="#E8B875"/>
+      <circle cx="8" cy="-75" r="2.2" fill="#17384A"/>
+      <path d="M-17-52C-8-59 9-58 17-49L21-7H-22Z" fill="#2A8C88"/>
+      <path d="M13-45C25-39 28-26 41-24" fill="none" stroke="#E8B875" stroke-width="9"/>
+      <circle cx="43" cy="-24" r="5" fill="#E8B875"/>
+      <path d="M-17-7-20 35M12-7 17 35" fill="none" stroke="#17384A" stroke-width="13"/>
+      <path d="M-28 36H-11M10 36H28" fill="none" stroke="#17384A" stroke-width="8"/>
+    </g>
+
+    <g id="clerkFacingLeft" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="0" cy="-68" r="17" fill="#E8B875"/>
+      <path d="M-19-75C-12-94 13-93 20-74 12-80 4-82-5-79-10-77-15-75-19-75Z" fill="#17384A"/>
+      <path d="M-17-52C-7-60 9-59 19-50L23 0H-23Z" fill="#17384A"/>
+      <path d="M-9-52 0-40 9-52" fill="#FFF8EC"/>
+      <path d="M-14-42C-25-34-29-23-42-20" fill="none" stroke="#E8B875" stroke-width="9"/>
+      <circle cx="-44" cy="-20" r="5" fill="#E8B875"/>
+      <circle cx="-7" cy="-70" r="2.2" fill="#17384A"/>
+    </g>
+
+    <g id="serviceCounter">
+      <rect x="0" y="0" width="126" height="16" rx="8" fill="#17384A"/>
+      <path d="M8 14H118V94C118 101 112 107 105 107H21C14 107 8 101 8 94Z" fill="#E8B875"/>
+      <path d="M38 22V99M78 22V99" fill="none" stroke="#17384A" stroke-opacity="0.14" stroke-width="3"/>
+      <path d="M8 76H118" fill="none" stroke="#17384A" stroke-opacity="0.14" stroke-width="3"/>
+    </g>
+
+    <g id="rollingBag" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 4V-13C9-23 24-23 24-13V4" fill="none" stroke="#17384A" stroke-width="5"/>
+      <rect x="0" y="0" width="34" height="48" rx="8" fill="#EF6A50"/>
+      <path d="M9 10V38M25 10V38" fill="none" stroke="#17384A" stroke-opacity="0.35" stroke-width="3"/>
+      <circle cx="8" cy="52" r="4" fill="#17384A"/>
+      <circle cx="26" cy="52" r="4" fill="#17384A"/>
+    </g>
+
+    <g id="plainKeyCard">
+      <rect width="44" height="29" rx="7" fill="#FFF8EC" stroke="#17384A" stroke-width="3"/>
+      <circle cx="11" cy="14.5" r="4" fill="#EF6A50"/>
+      <path d="M22 10H35M22 18H31" fill="none" stroke="#2A8C88" stroke-width="3" stroke-linecap="round"/>
+    </g>
+  </defs>
+
+  <rect width="1280" height="460" fill="url(#canvasWash)"/>
+  <path d="M0 47C148 1 274 2 408 36S687 85 826 39 1114-3 1280 42V0H0Z" fill="#2A8C88" opacity="0.08"/>
+  <path d="M0 423C151 389 296 398 422 425S691 467 835 425 1118 388 1280 417V460H0Z" fill="#EF6A50" opacity="0.08"/>
+
+  <!-- Complete spoken model -->
+  <g filter="url(#softShadow)">
+    <rect x="32" y="36" width="292" height="388" rx="28" fill="url(#panelOneWash)" stroke="#17384A" stroke-opacity="0.16" stroke-width="2"/>
+  </g>
+  <g>
+    <circle cx="65" cy="71" r="10" fill="#EF6A50"/>
+    <circle cx="292" cy="392" r="19" fill="none" stroke="#2A8C88" stroke-opacity="0.18" stroke-width="6"/>
+    <circle cx="292" cy="392" r="7" fill="#2A8C88" opacity="0.28"/>
+
+    <path d="M81 81H253C263 81 271 89 271 99V168C271 178 263 186 253 186H219L230 204 198 186H81C71 186 63 178 63 168V99C63 89 71 81 81 81Z" fill="#FFF8EC" stroke="#EF6A50" stroke-width="3"/>
+    <path d="M88 135C96 135 96 107 105 107S114 161 123 161 132 96 141 96 150 165 159 165 168 111 177 111 186 153 195 153 204 117 213 117 222 143 231 143 240 127 248 127" fill="none" stroke="#2A8C88" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M111 203C103 195 102 184 106 175M98 210C85 196 83 178 90 163" fill="none" stroke="#EF6A50" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+
+    <use href="#travelerFacingRight" transform="translate(106 352) scale(.9)"/>
+    <use href="#rollingBag" transform="translate(51 330) scale(.72)"/>
+    <use href="#clerkFacingLeft" transform="translate(245 282) scale(.84)"/>
+    <use href="#serviceCounter" transform="translate(181 279) scale(.92)"/>
+    <path d="M249 280C249 264 264 264 264 280" fill="#EF6A50"/>
+    <circle cx="256.5" cy="273" r="7" fill="#EF6A50"/>
+  </g>
+
+  <!-- Traveler completes the micro-task -->
+  <g filter="url(#softShadow)">
+    <rect x="340" y="36" width="292" height="388" rx="28" fill="url(#panelTwoWash)" stroke="#17384A" stroke-opacity="0.16" stroke-width="2"/>
+  </g>
+  <g>
+    <circle cx="373" cy="71" r="10" fill="#2A8C88"/>
+    <path d="M382 88H529C539 88 547 96 547 106V161C547 171 539 179 529 179H421L396 196 401 179H382C372 179 364 171 364 161V106C364 96 372 88 382 88Z" fill="#FFF8EC" stroke="#2A8C88" stroke-width="3"/>
+    <path d="M387 137C396 137 397 112 406 112S416 157 425 157 434 104 443 104 452 161 461 161 470 116 479 116 488 151 497 151 506 123 515 123 524 141 533 141" fill="none" stroke="#EF6A50" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="591" cy="94" r="21" fill="#2A8C88"/>
+    <path d="M580 94 588 102 602 84" fill="none" stroke="#FFF8EC" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <use href="#travelerFacingRight" transform="translate(414 352) scale(.9)"/>
+    <use href="#rollingBag" transform="translate(359 330) scale(.72)"/>
+    <use href="#clerkFacingLeft" transform="translate(553 282) scale(.84)"/>
+    <use href="#serviceCounter" transform="translate(489 279) scale(.92)"/>
+    <use href="#plainKeyCard" transform="translate(482 246) rotate(-6) scale(.84)"/>
+    <path d="M469 257 487 253" fill="none" stroke="#E8B875" stroke-width="9" stroke-linecap="round"/>
+  </g>
+
+  <!-- One focused correction -->
+  <g filter="url(#softShadow)">
+    <rect x="648" y="36" width="292" height="388" rx="28" fill="url(#panelThreeWash)" stroke="#17384A" stroke-opacity="0.16" stroke-width="2"/>
+  </g>
+  <g>
+    <circle cx="681" cy="71" r="10" fill="#EF6A50"/>
+    <rect x="678" y="89" width="232" height="105" rx="24" fill="#FFF8EC" stroke="#17384A" stroke-opacity="0.3" stroke-width="3"/>
+    <path d="M698 142C707 142 708 118 717 118S726 163 735 163 744 108 753 108 762 166 771 166 780 122 789 122" fill="none" stroke="#2A8C88" stroke-width="7" stroke-linecap="round"/>
+    <path d="M789 122C798 122 807 157 816 157 825 157 834 128 843 128" fill="none" stroke="#EF6A50" stroke-width="7" stroke-linecap="round"/>
+    <path d="M843 128C852 128 861 149 870 149 879 149 887 137 895 137" fill="none" stroke="#2A8C88" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="816" cy="140" r="30" fill="none" stroke="#EF6A50" stroke-width="4"/>
+    <path d="M816 101V110M816 170V179M777 140H786M846 140H855" fill="none" stroke="#EF6A50" stroke-width="4" stroke-linecap="round"/>
+    <path d="M867 210C852 196 839 188 827 177" fill="none" stroke="#E8B875" stroke-width="10" stroke-linecap="round"/>
+    <circle cx="825" cy="176" r="6" fill="#E8B875"/>
+
+    <use href="#travelerFacingRight" transform="translate(719 352) scale(.86)"/>
+    <use href="#clerkFacingLeft" transform="translate(864 282) scale(.84)"/>
+    <use href="#serviceCounter" transform="translate(797 279) scale(.92)"/>
+    <path d="M862 279 846 228" fill="none" stroke="#E8B875" stroke-width="9" stroke-linecap="round"/>
+  </g>
+
+  <!-- Changed condition and immediate retry -->
+  <g filter="url(#softShadow)">
+    <rect x="956" y="36" width="292" height="388" rx="28" fill="url(#panelFourWash)" stroke="#17384A" stroke-opacity="0.16" stroke-width="2"/>
+  </g>
+  <g>
+    <circle cx="989" cy="71" r="10" fill="#17384A"/>
+
+    <rect x="989" y="94" width="52" height="35" rx="8" fill="#E8B875" stroke="#17384A" stroke-width="3"/>
+    <circle cx="1003" cy="111.5" r="5" fill="#EF6A50"/>
+    <path d="M1015 106H1030M1015 117H1025" fill="none" stroke="#2A8C88" stroke-width="3" stroke-linecap="round"/>
+    <rect x="1162" y="94" width="52" height="35" rx="8" fill="#2A8C88" stroke="#17384A" stroke-width="3"/>
+    <circle cx="1176" cy="111.5" r="5" fill="#FFF8EC"/>
+    <path d="M1188 106H1203M1188 117H1198" fill="none" stroke="#FFF8EC" stroke-width="3" stroke-linecap="round"/>
+    <path d="M1049 99C1076 76 1125 76 1153 98" fill="none" stroke="#2A8C88" stroke-width="5" stroke-linecap="round" marker-end="url(#tealArrow)"/>
+    <path d="M1153 126C1125 149 1076 149 1048 127" fill="none" stroke="#EF6A50" stroke-width="5" stroke-linecap="round" marker-end="url(#coralArrow)"/>
+
+    <path d="M1001 166H1178C1188 166 1196 174 1196 184V231C1196 241 1188 249 1178 249H1051L1026 267 1031 249H1001C991 249 983 241 983 231V184C983 174 991 166 1001 166Z" fill="#FFF8EC" stroke="#2A8C88" stroke-width="3"/>
+    <path d="M1008 211C1017 211 1018 188 1027 188S1036 232 1045 232 1054 180 1063 180 1072 235 1081 235 1090 193 1099 193 1108 226 1117 226 1126 199 1135 199 1144 218 1153 218 1162 204 1171 204" fill="none" stroke="#2A8C88" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M1204 195C1220 210 1221 236 1206 253" fill="none" stroke="#EF6A50" stroke-width="5" stroke-linecap="round" marker-end="url(#coralArrow)"/>
+
+    <use href="#travelerFacingRight" transform="translate(1027 352) scale(.9)"/>
+    <use href="#rollingBag" transform="translate(972 330) scale(.72)"/>
+    <use href="#clerkFacingLeft" transform="translate(1171 282) scale(.84)"/>
+    <use href="#serviceCounter" transform="translate(1105 279) scale(.92)"/>
+    <use href="#plainKeyCard" transform="translate(1098 246) rotate(5) scale(.84)"/>
+  </g>
+
+  <path d="M324 230H340M632 230H648M940 230H956" fill="none" stroke="#17384A" stroke-opacity="0.18" stroke-width="4" stroke-linecap="round"/>
+</svg>

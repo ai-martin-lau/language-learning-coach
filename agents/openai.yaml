@@ -1,4 +1,4 @@
 interface:
-  display_name: "多语言学习教练"
-  short_description: "用可靠声音、情境语块、互动反馈与间隔复测学习主流语言"
-  default_prompt: "使用 $language-learning-coach 带我通过自适应日课学习一门主流语言。"
+  display_name: "小语种旅行 A2 教练"
+  short_description: "以 A2 常见任务为参照，训练可验证的旅行基础沟通能力"
+  default_prompt: "使用 $language-learning-coach 帮我学习一门旅行语言，从常见场景开始训练 A2 基础沟通能力。"
