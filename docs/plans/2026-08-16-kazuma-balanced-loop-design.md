@@ -10,6 +10,7 @@ Keep the coach recognizably based on Kazuma's public learning sequence while clo
 - Do not add automatic pronunciation scoring without a trustworthy observation tool.
 - Do not require Anki, a paid course, or a fixed sequence of all 30 starter functions.
 - Do not turn every lesson into a long intake form or a rigid checklist shown to the learner.
+- Do not claim support for signed, classical, constructed, or resource-scarce languages; this revision targets well-resourced modern spoken and written languages.
 
 ## Lesson contract
 
@@ -25,7 +26,7 @@ For spoken-language listening or speaking goals, run this adaptive loop:
 8. Explain one useful pattern from examples already used.
 9. Schedule delayed retest and one life-embedded action.
 
-The order may change for sign languages, reading-only goals, classical languages, accessibility needs, or a learner-specific reason recorded in the profile.
+The order may change for reading-only goals, writing goals, accessibility needs, or a learner-specific reason recorded in the profile.
 
 ## Audio evidence hierarchy
 
@@ -46,9 +47,9 @@ Track evidence separately for:
 - reading;
 - writing;
 - interaction;
-- pronunciation or visual production.
+- pronunciation.
 
-For each tested dimension, store the task, prompt level, result, date, and next retest. Never infer production from comprehension, pronunciation from self-reported repetition, or retention from same-session success.
+For each tested dimension, store the task, prompt level, result, evidence environment, date, and next retest. Never infer production from comprehension, pronunciation from self-reported repetition, human interaction from AI simulation, or retention from same-session success.
 
 Each phrase entry also stores its starter-function mapping, learner version, replaceable slot, likely follow-up, and repair expression. A separate function map tracks the 30 Kazuma-style starter functions without forcing a universal order.
 
@@ -65,7 +66,7 @@ Use solo talk, scenario rehearsal, short diary entries, and interest-linked inpu
 
 ## Deterministic support
 
-Add a small workspace validator that checks the Markdown state contract without pretending to judge the truth of learner evidence. It should catch missing files or fields, duplicate phrase/function IDs, invalid dimension states, unresolved placeholders paired with advanced mastery, and TTS entries presented as native recordings.
+Add a small workspace validator that checks the Markdown state contract without pretending to judge the truth of learner evidence. It should catch missing files or fields, duplicate or orphaned phrase/function IDs, invalid dimension or environment states, unresolved placeholders paired with advanced mastery, and TTS entries presented as native recordings.
 
 Keep the existing audio validator. Add unit tests for the workspace validator and run the normal Skill validation. Use fresh-agent forward tests for behavior that cannot be proven deterministically.
 
@@ -99,5 +100,5 @@ Judge the Skill by protocol compliance and evidence integrity. Judge learning on
 - The 30 starter functions are trackable but remain goal-adaptive.
 - Habit setup, solo production, real-use checkpoints, and delayed tests have explicit protocol steps.
 - Workspace and audio validators pass their unit tests.
-- Fresh-agent tests cover spoken zero-beginner, reading-only, sign-language, and low-resource exceptions.
+- Fresh-agent tests cover a spoken zero-beginner, a reading-only goal, a diglossic mainstream language, and a non-Latin writing system.
 - The Korean `T0` lesson can begin from the migrated learner state without inventing mastery.

@@ -15,7 +15,7 @@ For an audible language when listening or speaking is in scope and playback is a
 3. Validate local audio before delivery. A filename, successful download, or nonzero file size is not sufficient.
 4. Do not deliver files that are empty, undecodable, zero-duration, truncated, or digitally silent.
 5. If playable sound cannot be delivered, state the limitation and pause listening and pronunciation work. Switch to a non-audio task only with the learner's agreement.
-6. Keep video-first handling for signed languages and allow explicit reading-only or writing-only goals to bypass the audio gate without claiming listening or pronunciation progress.
+6. Allow explicit reading-only or writing-only goals to bypass the audio gate without claiming listening or pronunciation progress. Signed-language support was removed when the project scope narrowed to well-resourced modern spoken and written languages on 2026-08-16.
 
 ## Implementation
 
