@@ -1,4 +1,4 @@
 interface:
   display_name: "多语言学习教练"
-  short_description: "用可靠声音、情境语块、互动反馈与间隔复测持续学习各种语言"
-  default_prompt: "使用 $language-learning-coach 带我通过自适应日课学习一门语言。"
+  short_description: "用可靠声音、情境语块、互动反馈与间隔复测学习主流语言"
+  default_prompt: "使用 $language-learning-coach 带我通过自适应日课学习一门主流语言。"

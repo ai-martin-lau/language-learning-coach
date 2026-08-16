@@ -4,7 +4,7 @@
 
 An adaptive Codex Skill that turns language learning into a continuing practice: reliable input, useful chunks, active production, real interaction, focused feedback, and delayed review.
 
-It changes the lesson according to the language, variety, modality, goal, and the learner's observed performance. It can support spoken and written languages, signed languages, classical languages, constructed languages, and low-resource languages when reliable materials are available.
+It changes the lesson according to the language, variety, goal, and the learner's observed performance. Its scope is well-resourced modern spoken and written languages—for example English, French, German, Italian, Spanish, Portuguese, Korean, Japanese, and Arabic—not signed, classical, constructed, or resource-scarce languages.
 
 > [!IMPORTANT]
 > This is an independent open-source project inspired by Kazuma's publicly shared learning practices. It is not official, authorized, affiliated with, or endorsed by Kazuma.
@@ -17,24 +17,26 @@ Many AI language sessions end as isolated chats. Language Learning Coach is desi
 - **Useful chunks, then flexible use:** complete expressions are learned with context, response patterns, and replaceable slots—not as frozen scripts.
 - **Practice before the lecture:** the coach starts with input and interaction, then explains one high-value grammar pattern from what you just used.
 - **Evidence instead of streaks:** mastery depends on unaided recall, transfer, interaction, and delayed performance—not time spent or cards reviewed.
-- **Language-specific adaptation:** tones, writing systems, rich morphology, register, signing space, and historical traditions change the lesson design.
+- **Separate evidence by ability:** hearing a phrase does not automatically count as speaking, reading, writing, interaction, pronunciation, or retention.
+- **Language-specific adaptation:** tones, writing systems, rich morphology, honorifics, regional varieties, and diglossia change the lesson design.
 - **Persistent local state:** profile, phrase bank, performance evidence, and the next review queue can be maintained as readable Markdown.
 
 ## Core capabilities
 
 - First-time onboarding that starts with one exact question: **`What language do you want to learn?`**
 - Adaptive daily lessons, five-minute maintenance, deep study, and real-world debrief modes.
-- Audio-first listening and pronunciation practice, with explicit TTS labels and local WAV structure and signal validation.
-- Video-first adaptation for signed languages, including manual and non-manual features.
+- Audio-first listening and pronunciation practice with `native_official`, `native_traceable`, and `tts` source classes; TTS is labelled and cannot establish native-model pronunciation evidence.
 - Practical grammar, active vocabulary, conversation, reading, writing, and exam-focused work.
 - Delayed retrieval and transfer checks with six evidence states from `new` to `retained`.
+- Goal-adaptive tracking of Kazuma-style starter functions, including the learner's own version, a replaceable slot, a likely follow-up, and a repair expression.
+- Habit anchors, five-minute fallback tasks, solo talk, short diary work, interest-linked input, and clearly distinguished simulated versus real-world interaction.
 - One active language plus maintenance rotation for additional languages by default.
 - Optional Anki export built around situation-to-expression retrieval, not isolated word pairs.
-- Source verification and explicit `needs_confirmation` handling for low-resource or sensitive languages.
+- Source verification for pronunciation, variety, register, meaning, and cultural use.
 
 ## Requirements and installation
 
-You need Codex with local Skill support and Python 3 for local audio validation. The bundled validator accepts classic uncompressed RIFF PCM WAV; convert other audio formats before validation. The clone method also requires Git.
+You need Codex with local Skill support and Python 3 for local audio and learning-workspace validation. The bundled audio validator accepts classic uncompressed RIFF PCM WAV; convert other audio formats before validation. The clone method also requires Git.
 
 ### Install with the bundled Skill installer
 
@@ -82,8 +84,8 @@ Use $language-learning-coach. I am starting Japanese from zero and have
 ```
 
 ```text
-Use $language-learning-coach. Help me introduce myself at an American Sign
-Language community event. I can watch and record short videos.
+Use $language-learning-coach. Help me make polite requests in Egyptian Arabic.
+I want to distinguish the local spoken variety from Modern Standard Arabic.
 ```
 
 ```text
@@ -101,12 +103,9 @@ The coach asks only for information that changes the next lesson, then starts a 
 | A new or complex writing system | Sound and script progress together; transliteration receives a fade-out plan |
 | Rich inflection or agglutination | Whole chunks plus early stem/affix analysis and controlled generation |
 | Register, honorifics, dialect continua, or diglossia | Relationship, region, and medium are attached to each expression |
-| Signed languages | Reliable video, signing space, movement, orientation, and non-manual markers replace pronunciation work |
-| Classical, historical, or liturgical languages | Text tradition, morphology, corpus evidence, and a named pronunciation tradition take priority |
-| Low-resource or community-sensitive languages | Community or institutional sources are preferred; uncertain content is not invented |
 | Exams, reading, writing, work, travel, or heritage goals | The skill balance and assessment task change to match the real target |
 
-There is no fixed “supported languages” list. Support depends on the requested modality and the quality of available sources, and the coach must say when something cannot be verified.
+The examples above are not a fixed list: another modern spoken or written language is in scope when reliable audio, dictionaries, grammar references, and usage evidence are available. The coach must say when those materials are insufficient instead of claiming specialist coverage.
 
 ## Learning state and privacy
 
@@ -116,10 +115,11 @@ When the current workspace is writable, the coach can maintain:
 language-learning/<language-slug>/
 ├── profile.md
 ├── phrase-bank.md
+├── function-map.md
 └── progress.md
 ```
 
-These files store only course-relevant information: goals and constraints, contextualized expressions and sources, observed performance, corrections, and scheduled reviews. They remain in the user's workspace and are never written into the installed Skill directory.
+These files store only course-relevant information: goals and constraints, habit anchors, contextualized expressions and source classes, per-ability evidence, starter-function coverage, corrections, and scheduled reviews. They remain in the user's workspace and are never written into the installed Skill directory. A bundled validator checks structure and internal consistency without claiming that a recorded learning result is true.
 
 The repository contains no telemetry, account integration, or background service. Codex and any tools the user authorizes may still access external sources when a lesson requires current or reliable language material; their own privacy rules continue to apply.
 
@@ -128,8 +128,8 @@ The repository contains no telemetry, account integration, or background service
 The operational loop is:
 
 ```text
-reliable input → contextual chunk → perception and imitation → generation
-→ interaction → focused feedback → delayed retrieval
+due retrieval → classified reliable input → contextual chunk → whole-phrase imitation
+→ generation and repair → interaction → practical grammar → active use → delayed retrieval
 ```
 
 The design draws from Kazuma's public discussions of sound-first imitation, useful phrases, active vocabulary, practical grammar, consistent task-based habits, and interest-driven immersion. See [the method summary and primary sources](references/kazuma-method.md).
@@ -151,7 +151,9 @@ The coach does **not** promise fluency in a fixed number of days, a native accen
 │   ├── language-adaptation.md       # Cross-language feature adaptation
 │   └── session-protocols.md         # Lessons, feedback, review, and state
 ├── scripts/validate_audio.py        # Local PCM WAV delivery validator
-├── tests/test_validate_audio.py     # Validator regression tests
+├── scripts/validate_workspace.py    # Markdown learning-state validator
+├── tests/test_validate_audio.py     # Audio validator regression tests
+├── tests/test_validate_workspace.py # Workspace validator regression tests
 └── docs/plans/                      # Design records
 ```
 
@@ -160,7 +162,7 @@ The coach does **not** promise fluency in a fixed number of days, a native accen
 Issues and pull requests are welcome, especially for:
 
 - corrections supported by primary or community-recognized sources;
-- better adaptation for underrepresented language types or learner goals;
+- better adaptation for mainstream language varieties and learner goals;
 - clearer safety, cultural, accessibility, and evidence boundaries;
 - natural improvements to any of the five README translations.
 
