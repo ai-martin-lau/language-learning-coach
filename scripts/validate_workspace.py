@@ -115,6 +115,27 @@ MICRO_IMMERSION_STATES = ("off", "on")
 A2_SCREEN_STATES = ("not_ready", "evidence_consistent_in_tested_tasks")
 A2_READY_CONCLUSION = "证据与已测试旅行任务中的 A2 风格表现一致；正式 CEFR 未确认"
 A2_NOT_READY_CONCLUSION = "只报告单项任务的实际证据阶梯"
+FOUNDATION_TYPES = (
+    "symbol_sound",
+    "spelling_sound",
+    "stress",
+    "connected_speech",
+    "form_component",
+)
+SOUND_FOUNDATION_TYPES = (
+    "symbol_sound",
+    "spelling_sound",
+    "stress",
+    "connected_speech",
+)
+TRANSLITERATION_SUPPORTS = ("full", "partial", "none", "accessibility_required")
+FOUNDATION_FADE_TARGETS = {
+    "full": ("partial", "none"),
+    "partial": ("none",),
+    "none": ("none",),
+    "accessibility_required": ("accessibility_required", "none"),
+}
+FOUNDATION_ANCHOR_FIELDS = ("情境", "目标表达", "含义或交际功能")
 TRAVEL_DOMAINS = (
     "transport",
     "lodging",
@@ -242,6 +263,19 @@ ERROR_PATTERN_HEADER = (
     "下一辨别任务",
     "状态",
 )
+FOUNDATION_HEADER = (
+    "支线编号",
+    "类型",
+    "学习单位或规律",
+    "锚定语块",
+    "当前转写支架",
+    "首学日期",
+    "复测任务",
+    "答案可见性",
+    "复测转写支架",
+    "变化条件",
+    "到期日",
+)
 
 FIELD_RE = re.compile(r"^\s*-\s+([^：:\n]+?)\s*[：:]\s*(.*?)\s*$")
 PHRASE_HEADING_RE = re.compile(r"^##\s+(P\d{3,})\s*(?:[—–-]\s*.*)?$")
@@ -250,6 +284,7 @@ FUNCTION_ID_RE = re.compile(r"F(?:0[1-9]|[12]\d|30)\Z")
 PHRASE_ID_RE = re.compile(r"P\d{3,}\Z")
 MISSION_ID_RE = re.compile(r"M\d{2,}\Z")
 ERROR_PATTERN_ID_RE = re.compile(r"E\d{2,}\Z")
+FOUNDATION_ID_RE = re.compile(r"S\d{2,}\Z")
 TABLE_SEPARATOR_RE = re.compile(r":?-{3,}:?\Z")
 ISO_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
 LESSON_DATE_HEADING_RE = re.compile(r"^###\s+(\d{4}-\d{2}-\d{2})(?:\s*.*)?$")
@@ -347,6 +382,13 @@ class EvidenceRecord:
     dimension: str
     result: str
     environment: str
+
+
+@dataclass(frozen=True)
+class PhraseMetadata:
+    core_fields: tuple[tuple[str, str], ...]
+    source_class: str
+    audio_source_fields: tuple[tuple[str, str], ...]
 
 
 @dataclass(frozen=True)
@@ -670,6 +712,20 @@ def normalized_phrase_identity(
         )
         normalized_fields.append(" ".join(without_format_controls.split()))
     return tuple(normalized_fields)
+
+
+def phrase_metadata(
+    fields: dict[str, list[tuple[int, str]]],
+) -> PhraseMetadata:
+    return PhraseMetadata(
+        core_fields=tuple(
+            (label, field_value(fields, label)) for label in FOUNDATION_ANCHOR_FIELDS
+        ),
+        source_class=field_value(fields, "来源类别"),
+        audio_source_fields=tuple(
+            (label, field_value(fields, label)) for label in AUDIO_SOURCE_FIELDS
+        ),
+    )
 
 
 def validate_audio_file_reference(
@@ -1101,14 +1157,17 @@ def validate_phrase_bank(
     set[str],
     dict[str, tuple[EvidenceRecord, ...]],
     dict[str, tuple[str, str, str]],
+    dict[str, PhraseMetadata],
 ]:
     blocks = phrase_blocks(lines, errors)
     evidence_by_phrase: dict[str, tuple[EvidenceRecord, ...]] = {}
     phrase_identities: dict[str, tuple[str, str, str]] = {}
+    phrase_metadata_by_id: dict[str, PhraseMetadata] = {}
     for phrase_id, start, end in blocks:
         fields = parse_fields(lines, start + 1, end)
         require_fields("phrase-bank.md", fields, PHRASE_FIELDS, errors, phrase_id)
         phrase_identities.setdefault(phrase_id, normalized_phrase_identity(fields))
+        phrase_metadata_by_id.setdefault(phrase_id, phrase_metadata(fields))
 
         function_id = field_value(fields, "起步功能编号")
         if function_id and not is_placeholder(function_id) and function_id != "not_applicable":
@@ -1155,6 +1214,7 @@ def validate_phrase_bank(
         {phrase_id for phrase_id, _, _ in blocks},
         evidence_by_phrase,
         phrase_identities,
+        phrase_metadata_by_id,
     )
 
 
@@ -1652,11 +1712,216 @@ def validate_a2_style_screen(
         )
 
 
+def validate_sound_script_foundation(
+    lines: list[str],
+    target_script: str,
+    phrase_metadata_by_id: dict[str, PhraseMetadata],
+    lesson_dates: set[date],
+    errors: list[str],
+) -> None:
+    table = find_table(
+        "progress.md",
+        lines,
+        0,
+        len(lines),
+        FOUNDATION_HEADER,
+        errors,
+        "sound-script foundation",
+    )
+    if table is None:
+        return
+    if table.rows and is_placeholder(target_script):
+        errors.append(
+            "progress.md:sound-script foundation: unresolved or not_applicable target "
+            "script cannot contain foundation rows"
+        )
+
+    seen_ids: dict[str, int] = {}
+    for line_number, cells in table.rows:
+        if len(cells) != len(FOUNDATION_HEADER):
+            errors.append(
+                f"progress.md: line {line_number}: expected {len(FOUNDATION_HEADER)} "
+                f"foundation columns, found {len(cells)}"
+            )
+            continue
+        row = dict(zip(FOUNDATION_HEADER, cells))
+
+        foundation_id = row["支线编号"]
+        foundation_id_valid = bool(FOUNDATION_ID_RE.fullmatch(foundation_id)) and int(
+            foundation_id[1:]
+        ) > 0
+        if not foundation_id_valid:
+            errors.append(
+                f"progress.md: line {line_number}: invalid foundation ID "
+                f"'{foundation_id}'; expected S01 or higher"
+            )
+        elif foundation_id in seen_ids:
+            errors.append(
+                f"progress.md: line {line_number}: duplicate foundation ID "
+                f"{foundation_id}; first seen on line {seen_ids[foundation_id]}"
+            )
+        else:
+            seen_ids[foundation_id] = line_number
+
+        foundation_type = row["类型"]
+        if foundation_type not in FOUNDATION_TYPES:
+            errors.append(
+                f"progress.md: line {line_number}: invalid foundation type "
+                f"'{foundation_type}'; expected one of: {', '.join(FOUNDATION_TYPES)}"
+            )
+
+        learning_units = row["学习单位或规律"]
+        if is_placeholder(learning_units):
+            errors.append(
+                f"progress.md: line {line_number}: foundation item has unresolved learning "
+                f"units or rule '{learning_units}'"
+            )
+        else:
+            units = tuple(part.strip() for part in re.split(r"[;；]", learning_units))
+            if any(not unit for unit in units):
+                errors.append(
+                    f"progress.md: line {line_number}: foundation item has an empty "
+                    "semicolon-separated learning unit"
+                )
+            if len(units) > 5:
+                errors.append(
+                    f"progress.md: line {line_number}: foundation item may contain at most "
+                    "5 semicolon-separated learning units"
+                )
+            if any(unit and is_placeholder(unit) for unit in units):
+                errors.append(
+                    f"progress.md: line {line_number}: foundation item has unresolved "
+                    f"learning units or rule '{learning_units}'"
+                )
+
+        phrase_id = row["锚定语块"]
+        if not PHRASE_ID_RE.fullmatch(phrase_id):
+            errors.append(
+                f"progress.md: line {line_number}: foundation anchor must be exactly one "
+                f"phrase ID, found '{phrase_id}'"
+            )
+        elif phrase_id not in phrase_metadata_by_id:
+            errors.append(
+                f"progress.md: line {line_number}: unknown phrase reference {phrase_id}"
+            )
+        else:
+            metadata = phrase_metadata_by_id[phrase_id]
+            for label, value in metadata.core_fields:
+                if is_placeholder(value):
+                    errors.append(
+                        f"progress.md: line {line_number}: foundation anchor {phrase_id} "
+                        f"has unresolved phrase field '{label}'"
+                    )
+            if foundation_type in SOUND_FOUNDATION_TYPES:
+                missing_audio_fields = [
+                    label
+                    for label, value in metadata.audio_source_fields
+                    if is_placeholder(value)
+                ]
+                if metadata.source_class not in {
+                    "native_official",
+                    "native_traceable",
+                    "tts",
+                } or missing_audio_fields:
+                    detail = ", ".join(missing_audio_fields) or "来源类别"
+                    errors.append(
+                        f"progress.md: line {line_number}: {foundation_type} anchor "
+                        f"{phrase_id} requires a complete traceable audio source; "
+                        f"unresolved or undelivered: {detail}"
+                    )
+
+        current_transliteration = row["当前转写支架"]
+        current_transliteration_valid = (
+            current_transliteration in TRANSLITERATION_SUPPORTS
+        )
+        if not current_transliteration_valid:
+            errors.append(
+                f"progress.md: line {line_number}: invalid transliteration support "
+                f"'{current_transliteration}'; expected one of: "
+                f"{', '.join(TRANSLITERATION_SUPPORTS)}"
+            )
+
+        first_learning_value = row["首学日期"]
+        first_learning_date = parse_iso_date(first_learning_value)
+        if first_learning_date is None:
+            errors.append(
+                f"progress.md: line {line_number}: foundation first learning date must use "
+                f"ISO YYYY-MM-DD, found '{first_learning_value}'"
+            )
+        elif first_learning_date > date.today():
+            errors.append(
+                f"progress.md: line {line_number}: foundation first learning date cannot be "
+                f"in the future, found '{first_learning_value}'"
+            )
+        elif first_learning_date not in lesson_dates:
+            errors.append(
+                f"progress.md: line {line_number}: foundation first learning date "
+                f"{first_learning_date.isoformat()} has no matching progress.md lesson heading"
+            )
+
+        retest_task = row["复测任务"]
+        if is_placeholder(retest_task):
+            errors.append(
+                f"progress.md: line {line_number}: foundation retest cannot use unresolved "
+                f"value '{retest_task}'"
+            )
+
+        answer_visibility = row["答案可见性"]
+        if answer_visibility != "hidden":
+            errors.append(
+                f"progress.md: line {line_number}: foundation answer visibility must be "
+                f"hidden, found '{answer_visibility}'"
+            )
+
+        retest_transliteration = row["复测转写支架"]
+        retest_transliteration_valid = (
+            retest_transliteration in TRANSLITERATION_SUPPORTS
+        )
+        if not retest_transliteration_valid:
+            errors.append(
+                f"progress.md: line {line_number}: invalid retest transliteration support "
+                f"'{retest_transliteration}'; expected one of: "
+                f"{', '.join(TRANSLITERATION_SUPPORTS)}"
+            )
+        elif (
+            current_transliteration_valid
+            and retest_transliteration
+            not in FOUNDATION_FADE_TARGETS[current_transliteration]
+        ):
+            errors.append(
+                f"progress.md: line {line_number}: retest transliteration "
+                f"'{retest_transliteration}' does not fade current support "
+                f"'{current_transliteration}'"
+            )
+
+        change_condition = row["变化条件"]
+        if is_placeholder(change_condition):
+            errors.append(
+                f"progress.md: line {line_number}: foundation change condition cannot be "
+                f"unresolved, found '{change_condition}'"
+            )
+
+        due_value = row["到期日"]
+        due_date = parse_iso_date(due_value)
+        if due_date is None:
+            errors.append(
+                f"progress.md: line {line_number}: foundation due date must use ISO "
+                f"YYYY-MM-DD, found '{due_value}'"
+            )
+        elif first_learning_date is not None and due_date <= first_learning_date:
+            errors.append(
+                f"progress.md: line {line_number}: foundation due date must be later than "
+                "first learning date"
+            )
+
+
 def validate_progress(
     lines: list[str],
     phrase_ids: set[str],
+    phrase_metadata_by_id: dict[str, PhraseMetadata],
     evidence_by_phrase: dict[str, tuple[EvidenceRecord, ...]],
     phrase_identities: dict[str, tuple[str, str, str]],
+    target_script: str,
     profile_values: dict[str, str],
     lesson_dates: set[date],
     errors: list[str],
@@ -1683,6 +1948,14 @@ def validate_progress(
         errors.append(
             "progress.md: enabled micro-immersion requires a concrete trigger and action"
         )
+
+    validate_sound_script_foundation(
+        lines,
+        target_script,
+        phrase_metadata_by_id,
+        lesson_dates,
+        errors,
+    )
 
     missions = validate_mission_map(lines, phrase_ids, evidence_by_phrase, errors)
     validate_a2_style_screen(
@@ -1867,6 +2140,7 @@ def validate(workspace: Path) -> ValidationReport:
     phrase_ids: set[str] = set()
     evidence_by_phrase: dict[str, tuple[EvidenceRecord, ...]] = {}
     phrase_identities: dict[str, tuple[str, str, str]] = {}
+    phrase_metadata_by_id: dict[str, PhraseMetadata] = {}
     target_script = ""
     profile_values: dict[str, str] = {}
     lesson_dates: set[date] = set()
@@ -1896,6 +2170,7 @@ def validate(workspace: Path) -> ValidationReport:
             phrase_ids,
             evidence_by_phrase,
             phrase_identities,
+            phrase_metadata_by_id,
         ) = validate_phrase_bank(
             documents["phrase-bank.md"],
             workspace,
@@ -1907,8 +2182,10 @@ def validate(workspace: Path) -> ValidationReport:
         validate_progress(
             documents["progress.md"],
             phrase_ids,
+            phrase_metadata_by_id,
             evidence_by_phrase,
             phrase_identities,
+            target_script,
             profile_values,
             lesson_dates,
             report.errors,

@@ -168,6 +168,12 @@ Start a new Codex task after installation so the Skill is discovered.
 | Register, honorifics, dialect continua, or diglossia | Relationship, region, and medium are attached to each expression |
 | Reading, writing, work, exam, media, or heritage goals | Skill balance and evidence tasks change to match the real target |
 
+### A sound–script foundation lane for every applicable written language
+
+Every language in scope that has an applicable normal written form gets a cumulative sound–script foundation lane. For spoken goals with playable audio, it starts with the sound of one useful complete chunk, then reveals the normal target text and extracts only one small target from that chunk: for example, a Hangul jamo or syllable block, a kana contrast or contextual kanji reading, an Arabic joining form, a Chinese character distinction, or a spelling–sound, stress, or connected-speech pattern in French, German, or another language whose script is familiar. Practice returns immediately to the complete chunk; a whole chart never becomes a prerequisite for communication.
+
+When transliteration is needed, it is reduced in the same lesson or given an explicit fade plan. Every introduced unit or pattern receives a later no-answer retest in a changed position, word, sign, or nearby expression. The lane tracks coverage and scheduling, not mastery. Reading-only, signage-reading, and accessibility cases start from the actual medium. If a spoken goal temporarily lacks playable audio, sound work pauses and switches to text only after the user agrees; neither path manufactures listening or pronunciation evidence.
+
 The examples are not a permanent support list. Another modern spoken or written language is in scope when reliable audio, dictionaries, grammar references, and usage evidence are available. Signed, classical, constructed, and resource-scarce languages require specialist materials or coaching beyond this Skill's current scope.
 
 ## Local learning state and privacy
@@ -179,10 +185,12 @@ language-learning/<language-slug>/
 ├── profile.md
 ├── phrase-bank.md
 ├── function-map.md
-└── progress.md       # travel mission map, retests, and lesson evidence
+└── progress.md       # missions, sound–script lane, retests, and lesson evidence
 ```
 
-These readable Markdown files store course-relevant goals, constraints, habit anchors, contextualized expressions, audio source classes, per-ability evidence, starter-function coverage, recurring-error observations, optional micro-immersion, and scheduled retests. They remain in the user's workspace, not the installed Skill directory. A bundled validator checks structure and internal consistency without claiming that the recorded learning result is true.
+These readable Markdown files store course-relevant goals, constraints, habit anchors, contextualized expressions, audio source classes, per-ability evidence, starter-function coverage, sound–script foundation coverage, recurring-error observations, optional micro-immersion, and scheduled retests. They remain in the user's workspace, not the installed Skill directory. A bundled validator checks structure and internal consistency without claiming that the recorded learning result is true.
+
+Before validating an older workspace that lacks the sound–script table, the bundled additive migrator inserts one empty current table and preserves existing lessons, evidence, and notes; it never infers past foundation learning.
 
 The repository contains no telemetry, account integration, or background service. Codex and user-authorized tools may access external sources when a lesson needs reliable language material; those products' privacy rules still apply.
 

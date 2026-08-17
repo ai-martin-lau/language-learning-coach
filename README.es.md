@@ -168,6 +168,12 @@ Después de la instalación, abre una nueva tarea de Codex para que se detecte l
 | Registro, honoríficos, continuos dialectales o diglosia | Cada expresión conserva la relación, la región y el medio en que se usa |
 | Objetivos de lectura, escritura, trabajo, examen, contenidos audiovisuales o lengua de herencia | El equilibrio de destrezas y las tareas de evidencia cambian para ajustarse al objetivo real |
 
+### Una base de sonido y escritura para cada idioma con grafía aplicable
+
+Cada idioma dentro del alcance que tenga una forma escrita normal aplicable cuenta con una ruta acumulativa que conecta sonido y escritura. Si el objetivo es oral y hay audio reproducible, primero se escucha una expresión completa y útil; después se muestra su escritura habitual y se extrae de ella un solo objetivo pequeño: por ejemplo, un jamo o bloque silábico del coreano, un contraste de kana o una lectura contextual de kanji, una forma enlazada del árabe, una distinción gráfica del chino, o un patrón de ortografía–sonido, acento o habla enlazada en francés, alemán u otro idioma que use una escritura ya conocida. La práctica vuelve enseguida a la expresión completa; nunca exige dominar una tabla entera antes de comunicarse.
+
+Cuando hace falta transliteración, se reduce en la misma lección o recibe un plan explícito de retirada. Cada unidad o patrón introducido se reevalúa más adelante sin mostrar la respuesta, en otra posición, palabra, señal o expresión cercana. La ruta registra cobertura y programación, no dominio. Los objetivos solo de lectura, la lectura de señales y la accesibilidad empiezan por el medio real. Si un objetivo oral carece temporalmente de audio reproducible, el trabajo sonoro se detiene y solo pasa al texto con el consentimiento del usuario; ninguna de las dos rutas inventa evidencia de comprensión auditiva ni de pronunciación.
+
 Los ejemplos no constituyen una lista permanente de idiomas compatibles. Otro idioma moderno, hablado o escrito, entra dentro del alcance cuando dispone de audio fiable, diccionarios, referencias gramaticales y evidencia de uso. Las lenguas de signos, clásicas, construidas o con pocos recursos requieren materiales especializados o acompañamiento fuera del alcance actual de esta Skill.
 
 ## Estado de aprendizaje local y privacidad
@@ -179,10 +185,12 @@ language-learning/<language-slug>/
 ├── profile.md
 ├── phrase-bank.md
 ├── function-map.md
-└── progress.md       # misiones de viaje, reevaluaciones y evidencia de clase
+└── progress.md       # misiones, ruta de sonido–escritura, reevaluaciones y evidencia
 ```
 
-Estos archivos Markdown legibles guardan objetivos y restricciones pertinentes para el curso, anclas de hábito, expresiones contextualizadas, clases de fuente de audio, evidencia por destreza, cobertura de funciones iniciales, observaciones de errores recurrentes, microinmersión opcional y reevaluaciones programadas. Permanecen en el espacio de trabajo del usuario, no en el directorio donde está instalada la Skill. Un validador incluido comprueba la estructura y la coherencia interna sin afirmar que el resultado de aprendizaje registrado sea verdadero.
+Estos archivos Markdown legibles guardan objetivos y restricciones pertinentes para el curso, anclas de hábito, expresiones contextualizadas, clases de fuente de audio, evidencia por destreza, cobertura de funciones iniciales, cobertura de la base de sonido–escritura, observaciones de errores recurrentes, microinmersión opcional y reevaluaciones programadas. Permanecen en el espacio de trabajo del usuario, no en el directorio donde está instalada la Skill. Un validador incluido comprueba la estructura y la coherencia interna sin afirmar que el resultado de aprendizaje registrado sea verdadero.
+
+Antes de validar un espacio de trabajo antiguo sin la tabla de sonido–escritura, el migrador aditivo incluido inserta una sola tabla actual vacía y conserva las lecciones, evidencias y notas existentes; nunca infiere aprendizaje básico pasado.
 
 El repositorio no contiene telemetría, integración de cuentas ni servicios en segundo plano. Codex y las herramientas autorizadas por el usuario pueden acceder a fuentes externas cuando una lección necesite material lingüístico fiable; siguen aplicándose las políticas de privacidad de esos productos.
 

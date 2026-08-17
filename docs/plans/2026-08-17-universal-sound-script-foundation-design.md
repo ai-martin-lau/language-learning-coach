@@ -65,16 +65,16 @@ Only one new foundation micro-target should normally appear in a travel-first le
 
 Add `## 声音—文字基础支线` to `progress.md` with this table:
 
-| 支线编号 | 类型 | 学习单位或规律 | 锚定语块 | 转写支架 | 首学日期 | 下次无答案复测 | 到期日 |
-|---|---|---|---|---|---|---|---|
+| 支线编号 | 类型 | 学习单位或规律 | 锚定语块 | 当前转写支架 | 首学日期 | 复测任务 | 答案可见性 | 复测转写支架 | 变化条件 | 到期日 |
+|---|---|---|---|---|---|---|---|---|---|---|
 
 - IDs use `S01`, `S02`, and so on.
 - Type uses `symbol_sound`, `spelling_sound`, `stress`, `connected_speech`, or `form_component`.
 - `学习单位或规律` contains one to five semicolon-separated learning units or one compact rule description; it cannot be a placeholder.
-- `锚定语块` references one existing phrase ID. The foundation item must come from a real learned or planned chunk rather than an unrelated chart.
-- `转写支架` uses `full`, `partial`, `none`, or `accessibility_required`.
+- `锚定语块` references one existing phrase ID whose context, target expression, and communicative function are substantive. The foundation item must come from a real learned or planned chunk rather than an unrelated chart. Sound-related types require that phrase to carry a complete reliable audio-source record.
+- `当前转写支架` and `复测转写支架` use `full`, `partial`, `none`, or `accessibility_required`. The retest must reduce non-accessibility support: `full` to `partial` or `none`, `partial` to `none`, and `none` remains `none`; `accessibility_required` may remain or become `none`.
 - `首学日期` is an ISO date with a matching lesson heading and cannot be in the future.
-- `下次无答案复测` is a concrete task and must not reveal the worked answer.
+- `复测任务` is concrete, `答案可见性` is exactly `hidden`, and `变化条件` records the changed position, word, sign, or nearby expression separately from the task.
 - `到期日` is an ISO date later than the first-learning date.
 
 The table tracks coverage and scheduling, not mastery. Reading, writing, listening, spoken-production, interaction, and pronunciation results remain in `phrase-bank.md` with their existing media and source gates. A foundation row cannot by itself advance a phrase, travel mission, or A2-style screen.
@@ -90,9 +90,9 @@ Extend `validate_workspace.py` to check:
 - unique `S01+` IDs;
 - the type and transliteration enums;
 - substantive, bounded learning units or a compact rule;
-- an existing phrase reference;
+- a substantive existing phrase reference and complete audio source for sound-related types;
 - ISO first-learning and due dates, a matching real lesson heading, no future first-learning date, and a due date later than first learning;
-- a substantive next no-answer retest.
+- a substantive retest, exact hidden-answer declaration, concrete changed condition, and transliteration-support reduction.
 
 The validator will not infer whether a free-text retest accidentally reveals an answer or whether a linguistic explanation is correct. Those remain protocol and human-review boundaries.
 

@@ -20,7 +20,10 @@ For every scenario, verify that the tutor:
 10. ends a declared five-minute lesson after one compact win.
 11. when continuing, starts with one task and completion condition rather than a progress dump or mode menu;
 12. when an error is observed, treats it as `observing` and only marks the same pattern `recurring` after two distinct real lesson dates;
-13. when micro-immersion is offered, enables it only after user agreement and never upgrades self-reported completion into ability evidence.
+13. when micro-immersion is offered, enables it only after user agreement and never upgrades self-reported completion into ability evidence;
+14. builds each sound–script foundation target from a useful learned or planned phrase, introduces no more than one new micro-target in a travel-first lesson, and never requires a whole chart before communication;
+15. gives temporary transliteration an explicit reduction or fade action where applicable and schedules a concrete later no-answer retest in a changed position, word, sign, or nearby expression;
+16. treats the foundation lane as coverage and scheduling only, never as phrase, mission, or ability mastery evidence.
 
 Also verify that the learner-level A2-style screen stays `not_ready` unless its full conservative gate is met; one mission, one high-ranked phrase, or AI simulation must never unlock the claim.
 
@@ -34,31 +37,31 @@ Stress points: neutral placeholder instead of invented identity; audio-first del
 
 > I know no Japanese and cannot read kana. I am going to Tokyo in 21 days and have 10 minutes a day. Teach me to order one meal. I can play audio. Start.
 
-Stress points: audio before Japanese text; temporary romanization with a fade plan; romanization is not writing or audible speech; one item substitution and one likely restaurant response.
+Stress points: audio before Japanese text; one kana or mora micro-target taken from the known order chunk, not a whole kana chart; temporary romanization with a same-lesson reduction or fade plan; a later no-answer foundation retest; romanization is not writing or audible speech; one item substitution and one likely restaurant response.
 
 ## F03 — Egyptian Arabic taxi
 
 > I am a complete beginner in Egyptian Arabic. I am going to Cairo in 45 days and want to tell a taxi driver my destination and understand the next question. I cannot read Arabic, but I can play audio. Start.
 
-Stress points: Egyptian colloquial variety rather than MSA; traceable expression and register source; destination response, one follow-up, and a repair action; Arabic script and romanization remain separate evidence media.
+Stress points: Egyptian colloquial variety rather than MSA; traceable expression and register source; one right-to-left or joining-form micro-target inside a verified word or chunk, not a full alphabet; an explicit romanization fade action and later no-answer foundation retest; no full pronunciation inferred from unvowelled spelling; destination response, one follow-up, and a repair action; Arabic script and romanization remain separate evidence media.
 
 ## F04 — Korean convenience store, five minutes
 
 > I know no Korean and cannot read Hangul. I am going to Seoul next month and first want to buy something at a convenience store. I have only five minutes and can play audio. Start.
 
-Stress points: one core learner-required phrase plus at most one response or repair phrase; no habit questionnaire after the five-minute win; self-reported repetition remains practice completion, not spoken ability.
+Stress points: one core learner-required phrase plus at most one response or repair phrase; one jamo or syllable-block micro-target anchored to that phrase, not full consonant or vowel charts; a romanization fade action and later no-answer recombination retest; no habit questionnaire after the five-minute win; self-reported repetition remains practice completion, not spoken ability.
 
 ## F05 — German platform change, prior exposure
 
 > I studied a little German but can hardly speak. Tomorrow I will take a train in Munich and I am most worried about a platform change. I have five minutes, can hear audio, and cannot send a recording. Practise directly.
 
-Stress points: short baseline without a questionnaire; detail choices use at least `partial`; an explicit full meaning cue uses `intent/cued`; an unseen changed platform can support listening transfer but not real-station listening or spoken confirmation.
+Stress points: short baseline without a questionnaire; familiar Latin letters route to one phrase-anchored German spelling–sound, stress, silent-letter, segmentation, or connected-speech micro-target rather than alphabet instruction; the target receives a later no-answer retest; detail choices use at least `partial`; an explicit full meaning cue uses `intent/cued`; an unseen changed platform can support listening transfer but not real-station listening or spoken confirmation.
 
 ## F06 — Brazilian Portuguese, audio unavailable
 
 > I am a complete beginner in Portuguese. I am going to Brazil next month and first want to take a taxi. Audio will not play today, but my final goal is listening and speaking. Start directly.
 
-Stress points: the explicit request to continue permits a clearly labelled reading-only task; listening, speech, and pronunciation stay `new`; later spoken work waits for verified Brazilian Portuguese audio; text simulation is not a real taxi interaction.
+Stress points: the explicit request to continue permits a clearly labelled reading-only task; any form work stays tied to the real taxi task but cannot create sound–form or pronunciation evidence without audio; listening, speech, and pronunciation stay `new`; later spoken work waits for verified Brazilian Portuguese audio; text simulation is not a real taxi interaction.
 
 ## F07 — Korean continuation with a repeated form problem
 
@@ -77,6 +80,24 @@ Stress points: ask for or use one existing daily trigger; save one roughly 30-se
 > Continue my German train-station practice. Give me the next task directly.
 
 Seed the isolated workspace with three valid `recurring` patterns on different real lesson dates: two confusable `form_retrieval` patterns needed for the saved platform-change task, plus one unrelated restaurant `register` pattern. Stress points: the tutor folds exactly the two relevant patterns into one plausible station task, does not add the third, still requests one learner action, hides worked answers, and does not convert the mixed practice itself into unsupported retained or real-world evidence.
+
+## F10 — Mandarin ticket machine, unfamiliar characters
+
+> I know no Mandarin and cannot read Chinese characters. I am going to Beijing in 20 days and first need to ask whether a train goes to the airport. I can play audio. Start now.
+
+Stress points: verified Mandarin variety and sound before characters or pinyin; one high-value character-form distinction from the known travel chunk rather than an alphabetic explanation or character dump; pinyin gets a same-lesson reduction or explicit fade action; a later no-answer retest changes the word, sign, position, or nearby phrase; pinyin is neither target-script writing nor audible speech evidence.
+
+## F11 — Japanese signage-reading only
+
+> I am visiting Tokyo next week. For now I only want to recognize exit and platform signs, not practise speaking, and audio is unavailable. I cannot read Japanese. Start with one real sign task.
+
+Stress points: the pure signage-reading goal enters through visible form without forcing audio; one whole-word sign form or small contextual reading target stays anchored to the real task, with no kana or kanji chart dump; any transliteration is temporary; a later no-answer retest uses a changed sign; listening, spoken production, interaction, and pronunciation receive no upgrade.
+
+## F12 — Legacy workspace migration
+
+> Continue a valid existing course whose `progress.md` predates the sound–script foundation table. It contains real lesson notes, due retests, mission state, and user-authored comments that must not be rewritten.
+
+Stress points: run the bundled additive migration before validation; insert exactly one empty current foundation table and preserve every pre-existing line; do not infer old foundation units, evidence, or consent; a second migration run is unchanged; validate the migrated workspace before presenting the single due learner task.
 
 ## Human pilot gate
 

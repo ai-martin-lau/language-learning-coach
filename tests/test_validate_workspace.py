@@ -168,6 +168,86 @@ class ValidateWorkspaceTests(unittest.TestCase):
         )
         path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
+    def set_foundation_rows(self, *rows):
+        if rows:
+            profile = self.workspace / "profile.md"
+            profile_text = profile.read_text(encoding="utf-8")
+            placeholder = (
+                "- 目标文字脚本：待填写（latin／hangul／japanese／arabic／cyrillic／greek／"
+                "hebrew／devanagari／thai／han／other／not_applicable）"
+            )
+            if placeholder in profile_text:
+                profile.write_text(
+                    profile_text.replace(placeholder, "- 目标文字脚本：other", 1),
+                    encoding="utf-8",
+                )
+        path = self.workspace / "progress.md"
+        lines = path.read_text(encoding="utf-8").splitlines()
+        header = (
+            "| 支线编号 | 类型 | 学习单位或规律 | 锚定语块 | 当前转写支架 | 首学日期 | "
+            "复测任务 | 答案可见性 | 复测转写支架 | 变化条件 | 到期日 |"
+        )
+        if header not in lines:
+            old_header = (
+                "| 支线编号 | 类型 | 学习单位或规律 | 锚定语块 | 转写支架 | 首学日期 | "
+                "下次无答案复测 | 到期日 |"
+            )
+            if old_header in lines:
+                old_index = lines.index(old_header)
+                lines[old_index : old_index + 3] = [
+                    header,
+                    "|---|---|---|---|---|---|---|---|---|---|---|",
+                    "|  |  |  |  |  |  |  |  |  |  |  |",
+                ]
+            else:
+                insert_at = lines.index("## 复测队列")
+                lines[insert_at:insert_at] = [
+                    "## 声音—文字基础支线",
+                    "",
+                    header,
+                    "|---|---|---|---|---|---|---|---|---|---|---|",
+                    "|  |  |  |  |  |  |  |  |  |  |  |",
+                    "",
+                ]
+
+        header_index = lines.index(header)
+        row_index = header_index + 2
+        self.assertEqual("|  |  |  |  |  |  |  |  |  |  |  |", lines[row_index])
+        if rows:
+            lines[row_index : row_index + 1] = [
+                "| " + " | ".join(row) + " |" for row in rows
+            ]
+        path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    def foundation_row(
+        self,
+        *,
+        foundation_id="S01",
+        foundation_type="form_component",
+        units="ㅎ",
+        phrase_id="P001",
+        current_transliteration="partial",
+        first_learning="2026-08-16",
+        retest_task="在邻近语块中找出该单位",
+        answer_visibility="hidden",
+        retest_transliteration="none",
+        change_condition="邻近语块",
+        due="2026-08-17",
+    ):
+        return (
+            foundation_id,
+            foundation_type,
+            units,
+            phrase_id,
+            current_transliteration,
+            first_learning,
+            retest_task,
+            answer_visibility,
+            retest_transliteration,
+            change_condition,
+            due,
+        )
+
     def duplicate_phrase_block(self, phrase_id):
         path = self.workspace / "phrase-bank.md"
         text = path.read_text(encoding="utf-8")
@@ -347,6 +427,318 @@ class ValidateWorkspaceTests(unittest.TestCase):
         self.assertTrue(report.ok, report.errors)
         self.assertEqual(1, report.phrase_count)
         self.assertEqual(30, report.function_count)
+
+    def test_progress_requires_sound_script_foundation_table(self):
+        self.set_foundation_rows()
+        path = self.workspace / "progress.md"
+        text = path.read_text(encoding="utf-8")
+        start = text.index("## 声音—文字基础支线")
+        end = text.index("## 复测队列", start)
+        path.write_text(text[:start] + text[end:], encoding="utf-8")
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "missing table header 支线编号")
+
+    def test_empty_sound_script_foundation_template_passes(self):
+        self.set_foundation_rows()
+        report = validate_workspace.validate(self.workspace)
+        self.assertTrue(report.ok, report.errors)
+
+    def test_empty_foundation_table_passes_for_not_applicable_target_script(self):
+        self.set_target_script("not_applicable")
+        self.set_foundation_rows()
+        report = validate_workspace.validate(self.workspace)
+        self.assertTrue(report.ok, report.errors)
+
+    def test_form_component_foundation_can_use_no_audio_source(self):
+        self.set_foundation_rows(self.foundation_row())
+        report = validate_workspace.validate(self.workspace)
+        self.assertTrue(report.ok, report.errors)
+
+    def test_valid_sound_script_foundation_row_passes(self):
+        self.set_complete_tts_source()
+        self.set_foundation_rows(
+            self.foundation_row(
+                foundation_type="symbol_sound",
+                units="ㅎ;ㅏ;ㄴ",
+            )
+        )
+        report = validate_workspace.validate(self.workspace)
+        self.assertTrue(report.ok, report.errors)
+
+    def test_foundation_rows_are_forbidden_when_target_script_is_not_applicable(self):
+        self.set_foundation_rows(self.foundation_row())
+        self.replace("profile.md", "- 目标文字脚本：other", "- 目标文字脚本：not_applicable")
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(
+            report, "unresolved or not_applicable target script cannot contain foundation rows"
+        )
+
+    def test_foundation_rows_require_a_resolved_target_script(self):
+        self.set_foundation_rows(self.foundation_row())
+        self.replace(
+            "profile.md",
+            "- 目标文字脚本：other",
+            "- 目标文字脚本：待填写（latin／hangul／japanese／arabic／cyrillic／greek／"
+            "hebrew／devanagari／thai／han／other／not_applicable）",
+        )
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(
+            report, "unresolved or not_applicable target script cannot contain foundation rows"
+        )
+
+    def test_foundation_anchor_requires_substantive_core_phrase_metadata(self):
+        replacements = (
+            ("- 情境：测试旅行场景", "- 情境：待填写"),
+            ("- 目标表达：test phrase", "- 目标表达：待填写"),
+            ("- 含义或交际功能：完成测试请求", "- 含义或交际功能：待填写"),
+        )
+        for old, new in replacements:
+            self.replace("phrase-bank.md", old, new)
+        self.set_foundation_rows(self.foundation_row())
+        report = validate_workspace.validate(self.workspace)
+        for label in ("情境", "目标表达", "含义或交际功能"):
+            self.assert_error_contains(
+                report, f"foundation anchor P001 has unresolved phrase field '{label}'"
+            )
+
+    def test_sound_foundation_types_require_complete_traceable_phrase_audio_source(self):
+        self.replace("phrase-bank.md", "- 来源类别：`pending`", "- 来源类别：`tts`")
+        sound_types = (
+            "symbol_sound",
+            "spelling_sound",
+            "stress",
+            "connected_speech",
+        )
+        self.set_foundation_rows(
+            *(
+                self.foundation_row(
+                    foundation_id=f"S{index:02d}",
+                    foundation_type=foundation_type,
+                    units=f"单位 {index}",
+                )
+                for index, foundation_type in enumerate(sound_types, start=1)
+            )
+        )
+        report = validate_workspace.validate(self.workspace)
+        for foundation_type in sound_types:
+            self.assert_error_contains(
+                report,
+                f"{foundation_type} anchor P001 requires a complete traceable audio source",
+            )
+
+    def test_foundation_table_header_must_be_unique(self):
+        self.set_foundation_rows()
+        path = self.workspace / "progress.md"
+        text = path.read_text(encoding="utf-8")
+        header = (
+            "| 支线编号 | 类型 | 学习单位或规律 | 锚定语块 | 当前转写支架 | 首学日期 | "
+            "复测任务 | 答案可见性 | 复测转写支架 | 变化条件 | 到期日 |\n"
+            "|---|---|---|---|---|---|---|---|---|---|---|\n"
+            "|  |  |  |  |  |  |  |  |  |  |  |\n\n"
+        )
+        marker = "## 复测队列"
+        path.write_text(text.replace(marker, header + marker, 1), encoding="utf-8")
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "duplicate table header")
+
+    def test_foundation_ids_must_be_positive_s01_style_and_unique(self):
+        invalid_row = self.foundation_row(foundation_id="S00")
+        valid_row = self.foundation_row(units="ㅏ")
+        self.set_foundation_rows(invalid_row, valid_row, valid_row)
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "invalid foundation ID 'S00'")
+        self.assert_error_contains(report, "duplicate foundation ID S01")
+
+    def test_foundation_type_and_transliteration_use_declared_enums(self):
+        self.set_foundation_rows(
+            self.foundation_row(
+                foundation_type="alphabet", current_transliteration="always"
+            ),
+            self.foundation_row(
+                foundation_id="S02",
+                units="ㅏ",
+                current_transliteration="none",
+                retest_transliteration="sometimes",
+            ),
+        )
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "invalid foundation type 'alphabet'")
+        self.assert_error_contains(report, "invalid transliteration support 'always'")
+        self.assert_error_contains(
+            report, "invalid retest transliteration support 'sometimes'"
+        )
+
+    def test_foundation_learning_units_are_substantive_and_limited_to_five(self):
+        self.set_foundation_rows(
+            self.foundation_row(
+                foundation_type="spelling_sound", units="待填写"
+            ),
+            self.foundation_row(
+                foundation_id="S02",
+                foundation_type="spelling_sound",
+                units="a;b;c;d;e;f",
+            ),
+            self.foundation_row(
+                foundation_id="S03",
+                foundation_type="spelling_sound",
+                units="a;;b",
+            ),
+        )
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "unresolved learning units")
+        self.assert_error_contains(report, "at most 5 semicolon-separated learning units")
+        self.assert_error_contains(report, "empty semicolon-separated learning unit")
+
+    def test_foundation_accepts_five_units_and_one_compact_rule(self):
+        self.set_complete_tts_source()
+        self.set_foundation_rows(
+            self.foundation_row(
+                units="a;b;c;d;e",
+                current_transliteration="full",
+                retest_transliteration="partial",
+                change_condition="新位置",
+            ),
+            self.foundation_row(
+                foundation_id="S02",
+                foundation_type="connected_speech",
+                units="辅音后接元音时连读",
+                current_transliteration="none",
+                retest_transliteration="none",
+            ),
+        )
+        report = validate_workspace.validate(self.workspace)
+        self.assertTrue(report.ok, report.errors)
+
+    def test_foundation_retest_transliteration_must_fade_from_current_support(self):
+        self.set_foundation_rows(
+            self.foundation_row(
+                current_transliteration="full", retest_transliteration="full"
+            ),
+            self.foundation_row(
+                foundation_id="S02",
+                units="ㅏ",
+                current_transliteration="partial",
+                retest_transliteration="partial",
+            ),
+        )
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(
+            report, "retest transliteration 'full' does not fade current support 'full'"
+        )
+        self.assert_error_contains(
+            report, "retest transliteration 'partial' does not fade current support 'partial'"
+        )
+
+    def test_foundation_accepts_all_declared_transliteration_fade_paths(self):
+        fade_paths = (
+            ("full", "partial"),
+            ("full", "none"),
+            ("partial", "none"),
+            ("none", "none"),
+            ("accessibility_required", "accessibility_required"),
+            ("accessibility_required", "none"),
+        )
+        self.set_foundation_rows(
+            *(
+                self.foundation_row(
+                    foundation_id=f"S{index:02d}",
+                    units=f"单位 {index}",
+                    current_transliteration=current,
+                    retest_transliteration=retest,
+                )
+                for index, (current, retest) in enumerate(fade_paths, start=1)
+            )
+        )
+        report = validate_workspace.validate(self.workspace)
+        self.assertTrue(report.ok, report.errors)
+
+    def test_foundation_retest_requires_hidden_answer_and_changed_context(self):
+        self.set_foundation_rows(
+            self.foundation_row(answer_visibility="visible"),
+            self.foundation_row(
+                foundation_id="S02",
+                units="ㅏ",
+                change_condition="待填写",
+            ),
+        )
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "foundation answer visibility must be hidden")
+        self.assert_error_contains(report, "foundation change condition cannot be unresolved")
+
+    def test_foundation_phrase_reference_must_be_exactly_one_existing_phrase(self):
+        rows = (
+            self.foundation_row(phrase_id="P999"),
+            self.foundation_row(
+                foundation_id="S02", units="ㅏ", phrase_id="P001, P002"
+            ),
+        )
+        self.set_foundation_rows(*rows)
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "unknown phrase reference P999")
+        self.assert_error_contains(report, "foundation anchor must be exactly one phrase ID")
+
+    def test_foundation_dates_must_use_iso_format(self):
+        self.set_foundation_rows(
+            self.foundation_row(
+                foundation_type="stress",
+                units="重音在第一音节",
+                current_transliteration="none",
+                first_learning="2026/08/16",
+                due="2026/08/17",
+            )
+        )
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "foundation first learning date must use ISO YYYY-MM-DD")
+        self.assert_error_contains(report, "foundation due date must use ISO YYYY-MM-DD")
+
+    def test_foundation_first_learning_date_requires_real_nonfuture_lesson(self):
+        future = (date.today() + timedelta(days=1)).isoformat()
+        self.set_foundation_rows(
+            self.foundation_row(
+                foundation_type="form_component",
+                units="亻偏旁",
+                current_transliteration="none",
+                first_learning="2026-08-15",
+                change_condition="新标牌",
+            ),
+            self.foundation_row(
+                foundation_id="S02",
+                foundation_type="form_component",
+                units="口字旁",
+                current_transliteration="none",
+                first_learning=future,
+                change_condition="新标牌",
+                due="2099-01-01",
+            ),
+        )
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "has no matching progress.md lesson heading")
+        self.assert_error_contains(report, "foundation first learning date cannot be in the future")
+
+    def test_foundation_due_date_must_follow_first_learning(self):
+        self.set_foundation_rows(
+            self.foundation_row(
+                foundation_type="spelling_sound",
+                units="ch 在该语块中的发音",
+                current_transliteration="accessibility_required",
+                retest_transliteration="accessibility_required",
+                change_condition="新词",
+                due="2026-08-16",
+            )
+        )
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "foundation due date must be later than first learning date")
+
+    def test_foundation_retest_must_not_be_placeholder(self):
+        self.set_foundation_rows(
+            self.foundation_row(
+                foundation_type="spelling_sound",
+                units="ch 在该语块中的发音",
+                retest_task="待复测",
+            )
+        )
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "foundation retest cannot use unresolved value")
 
     def test_missing_required_file_is_reported(self):
         (self.workspace / "function-map.md").unlink()
@@ -1414,8 +1806,8 @@ class ValidateWorkspaceTests(unittest.TestCase):
     def test_progress_retest_rows_use_shared_dimension_and_prompt_enums(self):
         self.replace(
             "progress.md",
-            "|  |  |  |  |  |  |  |",
-            "| P001 | speaking | 2026-08-17 | 酒店任务 | hint | 餐厅 | 延迟复测 |",
+            "|  |  |  |  |  |  |  |\n\n## 反复错误队列",
+            "| P001 | speaking | 2026-08-17 | 酒店任务 | hint | 餐厅 | 延迟复测 |\n\n## 反复错误队列",
         )
         report = validate_workspace.validate(self.workspace)
         self.assert_error_contains(report, "progress.md:")
@@ -1430,8 +1822,8 @@ class ValidateWorkspaceTests(unittest.TestCase):
     def test_progress_phrase_references_must_exist(self):
         self.replace(
             "progress.md",
-            "|  |  |  |  |  |  |  |",
-            "| P999 | listening | 2026-08-17 | 酒店任务 | none | 餐厅 | 延迟复测 |",
+            "|  |  |  |  |  |  |  |\n\n## 反复错误队列",
+            "| P999 | listening | 2026-08-17 | 酒店任务 | none | 餐厅 | 延迟复测 |\n\n## 反复错误队列",
         )
         report = validate_workspace.validate(self.workspace)
         self.assert_error_contains(report, "unknown phrase reference P999")
