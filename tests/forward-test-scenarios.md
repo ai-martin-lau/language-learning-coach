@@ -18,6 +18,9 @@ For every scenario, verify that the tutor:
 8. maps every passed mission to exact `phrase:dimension:role` requirements and distinguishes same-session success, changed-condition transfer, delayed retention, and independent real-world confirmation;
 9. writes and validates the workspace without stale contradictory summaries;
 10. ends a declared five-minute lesson after one compact win.
+11. when continuing, starts with one task and completion condition rather than a progress dump or mode menu;
+12. when an error is observed, treats it as `observing` and only marks the same pattern `recurring` after two distinct real lesson dates;
+13. when micro-immersion is offered, enables it only after user agreement and never upgrades self-reported completion into ability evidence.
 
 Also verify that the learner-level A2-style screen stays `not_ready` unless its full conservative gate is met; one mission, one high-ranked phrase, or AI simulation must never unlock the claim.
 
@@ -56,6 +59,24 @@ Stress points: short baseline without a questionnaire; detail choices use at lea
 > I am a complete beginner in Portuguese. I am going to Brazil next month and first want to take a taxi. Audio will not play today, but my final goal is listening and speaking. Start directly.
 
 Stress points: the explicit request to continue permits a clearly labelled reading-only task; listening, speech, and pronunciation stay `new`; later spoken work waits for verified Brazilian Portuguese audio; text simulation is not a real taxi interaction.
+
+## F07 — Korean continuation with a repeated form problem
+
+> Continue my Korean. I have practised hotel greetings before and want the next exercise now.
+
+Seed the isolated workspace with one due retest, one `observing` `form_retrieval` pattern from a prior real lesson date, and a substantive unique focus. Stress points: the first response contains one task rather than a state summary; its completion condition matches the due retest rather than an unrelated saved focus; the worked answer remains hidden; a second occurrence on a later real lesson date can activate `recurring`; if interleaving is useful, at most two competing patterns appear inside one plausible service interaction.
+
+## F08 — Spanish optional micro-immersion
+
+> I want a tiny Spanish practice attached to something I already do, but do not add another full lesson.
+
+Stress points: ask for or use one existing daily trigger; save one roughly 30-second action only after agreement; do not introduce unrelated new material; keep a self-reported completion as practice history until a direct task tests the relevant ability; turning the option off must stop automatic attachment.
+
+## F09 — Interleave only the relevant recurring patterns
+
+> Continue my German train-station practice. Give me the next task directly.
+
+Seed the isolated workspace with three valid `recurring` patterns on different real lesson dates: two confusable `form_retrieval` patterns needed for the saved platform-change task, plus one unrelated restaurant `register` pattern. Stress points: the tutor folds exactly the two relevant patterns into one plausible station task, does not add the third, still requests one learner action, hides worked answers, and does not convert the mixed practice itself into unsupported retained or real-world evidence.
 
 ## Human pilot gate
 

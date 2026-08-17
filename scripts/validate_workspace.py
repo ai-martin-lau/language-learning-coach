@@ -101,6 +101,17 @@ MISSION_STATES = (
     "not_selected",
 )
 MISSION_ROLES = ("core", "follow_up", "repair")
+ERROR_CATEGORIES = (
+    "meaning",
+    "form_retrieval",
+    "register",
+    "script",
+    "interaction_repair",
+    "pronunciation",
+    "other",
+)
+ERROR_PATTERN_STATES = ("observing", "recurring", "resolved")
+MICRO_IMMERSION_STATES = ("off", "on")
 A2_SCREEN_STATES = ("not_ready", "evidence_consistent_in_tested_tasks")
 A2_READY_CONCLUSION = "证据与已测试旅行任务中的 A2 风格表现一致；正式 CEFR 未确认"
 A2_NOT_READY_CONCLUSION = "只报告单项任务的实际证据阶梯"
@@ -203,6 +214,8 @@ PROGRESS_FIELDS = (
     "兴趣输入",
     "真人或现实任务检查点",
     "当前检查点证据",
+    "微沉浸状态",
+    "微沉浸触发与单项动作",
 )
 
 EVIDENCE_HEADER = (
@@ -220,6 +233,15 @@ FUNCTION_HEADER = ("功能编号", "沟通功能", "本期优先级", "状态", 
 MISSION_HEADER = ("任务编号", "任务域", "胜利条件", "证据要求", "状态", "最近证据", "下一变化")
 A2_SCREEN_HEADER = ("筛查编号", "状态", "达标任务域", "能力覆盖", "现实检查", "结论")
 RETEST_HEADER = ("编号", "维度", "到期日", "无答案任务", "提示级别", "迁移条件", "安排原因")
+ERROR_PATTERN_HEADER = (
+    "模式编号",
+    "类别",
+    "观察日期",
+    "关联语块",
+    "观察到的问题",
+    "下一辨别任务",
+    "状态",
+)
 
 FIELD_RE = re.compile(r"^\s*-\s+([^：:\n]+?)\s*[：:]\s*(.*?)\s*$")
 PHRASE_HEADING_RE = re.compile(r"^##\s+(P\d{3,})\s*(?:[—–-]\s*.*)?$")
@@ -227,6 +249,7 @@ POSSIBLE_PHRASE_HEADING_RE = re.compile(r"^##\s+((?:P\S+)|(?:[A-Za-z]\d+))")
 FUNCTION_ID_RE = re.compile(r"F(?:0[1-9]|[12]\d|30)\Z")
 PHRASE_ID_RE = re.compile(r"P\d{3,}\Z")
 MISSION_ID_RE = re.compile(r"M\d{2,}\Z")
+ERROR_PATTERN_ID_RE = re.compile(r"E\d{2,}\Z")
 TABLE_SEPARATOR_RE = re.compile(r":?-{3,}:?\Z")
 ISO_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
 LESSON_DATE_HEADING_RE = re.compile(r"^###\s+(\d{4}-\d{2}-\d{2})(?:\s*.*)?$")
@@ -1635,10 +1658,32 @@ def validate_progress(
     evidence_by_phrase: dict[str, tuple[EvidenceRecord, ...]],
     phrase_identities: dict[str, tuple[str, str, str]],
     profile_values: dict[str, str],
+    lesson_dates: set[date],
     errors: list[str],
 ) -> None:
     fields = parse_fields(lines)
     require_fields("progress.md", fields, PROGRESS_FIELDS, errors)
+    if lesson_dates:
+        for label in ("本次唯一重点", "最小完成任务"):
+            if is_placeholder(field_value(fields, label)):
+                errors.append(
+                    f"progress.md: started workspace requires substantive '{label}'"
+                )
+
+    micro_immersion_status = field_value(fields, "微沉浸状态")
+    if micro_immersion_status not in MICRO_IMMERSION_STATES:
+        errors.append(
+            "progress.md: invalid micro-immersion status "
+            f"'{micro_immersion_status}'; expected one of: "
+            f"{', '.join(MICRO_IMMERSION_STATES)}"
+        )
+    elif micro_immersion_status == "on" and is_placeholder(
+        field_value(fields, "微沉浸触发与单项动作")
+    ):
+        errors.append(
+            "progress.md: enabled micro-immersion requires a concrete trigger and action"
+        )
+
     missions = validate_mission_map(lines, phrase_ids, evidence_by_phrase, errors)
     validate_a2_style_screen(
         lines,
@@ -1648,6 +1693,135 @@ def validate_progress(
         profile_values,
         errors,
     )
+    error_table = find_table(
+        "progress.md",
+        lines,
+        0,
+        len(lines),
+        ERROR_PATTERN_HEADER,
+        errors,
+        "recurring error queue",
+    )
+    if error_table is not None:
+        seen_pattern_ids: dict[str, int] = {}
+        for line_number, cells in error_table.rows:
+            if len(cells) != len(ERROR_PATTERN_HEADER):
+                errors.append(
+                    f"progress.md: line {line_number}: expected "
+                    f"{len(ERROR_PATTERN_HEADER)} recurring error columns, found {len(cells)}"
+                )
+                continue
+            row = dict(zip(ERROR_PATTERN_HEADER, cells))
+            pattern_id = row["模式编号"]
+            pattern_id_valid = bool(ERROR_PATTERN_ID_RE.fullmatch(pattern_id)) and int(
+                pattern_id[1:]
+            ) > 0
+            if not pattern_id_valid:
+                errors.append(
+                    f"progress.md: line {line_number}: invalid error pattern ID "
+                    f"'{pattern_id}'; expected E01 or higher"
+                )
+            elif pattern_id in seen_pattern_ids:
+                errors.append(
+                    f"progress.md: line {line_number}: duplicate error pattern ID "
+                    f"{pattern_id}; first seen on line {seen_pattern_ids[pattern_id]}"
+                )
+            else:
+                seen_pattern_ids[pattern_id] = line_number
+
+            category = row["类别"]
+            if category not in ERROR_CATEGORIES:
+                errors.append(
+                    f"progress.md: line {line_number}: invalid error category "
+                    f"'{category}'; expected one of: {', '.join(ERROR_CATEGORIES)}"
+                )
+            state = row["状态"]
+            if state not in ERROR_PATTERN_STATES:
+                errors.append(
+                    f"progress.md: line {line_number}: invalid error pattern state "
+                    f"'{state}'; expected one of: {', '.join(ERROR_PATTERN_STATES)}"
+                )
+
+            for label in ("观察到的问题", "下一辨别任务"):
+                if is_placeholder(row[label]):
+                    errors.append(
+                        f"progress.md: line {line_number}: error pattern cannot use "
+                        f"unresolved '{label}' value '{row[label]}'"
+                    )
+
+            raw_dates = (
+                ()
+                if is_placeholder(row["观察日期"])
+                else tuple(
+                    item.strip()
+                    for item in re.split(r"[,，;；]+", row["观察日期"])
+                    if item.strip()
+                )
+            )
+            parsed_dates: list[date] = []
+            seen_dates: set[date] = set()
+            for raw_date in raw_dates:
+                observation_date = parse_iso_date(raw_date)
+                if observation_date is None:
+                    errors.append(
+                        f"progress.md: line {line_number}: invalid observation date "
+                        f"'{raw_date}'; expected YYYY-MM-DD"
+                    )
+                    continue
+                if observation_date in seen_dates:
+                    errors.append(
+                        f"progress.md: line {line_number}: duplicate observation date "
+                        f"{observation_date.isoformat()}"
+                    )
+                    continue
+                seen_dates.add(observation_date)
+                parsed_dates.append(observation_date)
+                if observation_date > date.today():
+                    errors.append(
+                        f"progress.md: line {line_number}: observation date "
+                        f"{observation_date.isoformat()} cannot be in the future"
+                    )
+                if observation_date not in lesson_dates:
+                    errors.append(
+                        f"progress.md: line {line_number}: observation date "
+                        f"{observation_date.isoformat()} has no matching lesson heading"
+                    )
+            if not raw_dates:
+                errors.append(
+                    f"progress.md: line {line_number}: error pattern requires at least one "
+                    "observation date"
+                )
+            if state in {"recurring", "resolved"} and len(parsed_dates) < 2:
+                errors.append(
+                    f"progress.md: line {line_number}: {state} state requires at least 2 "
+                    "distinct lesson dates"
+                )
+
+            raw_phrase_ids = (
+                ()
+                if is_placeholder(row["关联语块"])
+                else tuple(
+                    item.strip()
+                    for item in re.split(r"[,，;；]+", row["关联语块"])
+                    if item.strip()
+                )
+            )
+            if not raw_phrase_ids:
+                errors.append(
+                    f"progress.md: line {line_number}: error pattern requires at least one "
+                    "phrase reference"
+                )
+            for phrase_id in raw_phrase_ids:
+                if not PHRASE_ID_RE.fullmatch(phrase_id):
+                    errors.append(
+                        f"progress.md: line {line_number}: invalid phrase reference "
+                        f"'{phrase_id}'"
+                    )
+                elif phrase_id not in phrase_ids:
+                    errors.append(
+                        f"progress.md: line {line_number}: unknown phrase reference {phrase_id}"
+                    )
+
     table = find_table(
         "progress.md", lines, 0, len(lines), RETEST_HEADER, errors, "retest queue"
     )
@@ -1736,6 +1910,7 @@ def validate(workspace: Path) -> ValidationReport:
             evidence_by_phrase,
             phrase_identities,
             profile_values,
+            lesson_dates,
             report.errors,
         )
     if "function-map.md" in documents:

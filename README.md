@@ -82,6 +82,10 @@ For a spoken travel goal, a typical lesson moves through:
 7. fix one or two task-critical problems, then redo immediately;
 8. retry later with a changed place, time, person, item, or condition.
 
+Every continuation starts with one visible next task and a concrete completion condition. One mistake remains an observation; only the same pattern appearing across at least two real lesson dates enters the recurring-error queue. When two active patterns genuinely compete in one situation, the coach can interleave them inside that task instead of drilling each one in a block.
+
+You can also opt into a roughly 30-second micro-immersion action attached to something you already do, such as opening a map or checking a booking. It adds no automatic new material, and reporting that you completed it records practice rather than upgrading ability evidence.
+
 The order changes for reading-only or writing goals, accessibility needs, a new script, tone or pitch contrasts, rich inflection, honorifics, regional varieties, or diglossia. Travel is the primary route; work, exams, reading, writing, media, and heritage goals remain supported when reliable resources exist.
 
 ## One micro-lesson, four visible moves
@@ -178,7 +182,7 @@ language-learning/<language-slug>/
 └── progress.md       # travel mission map, retests, and lesson evidence
 ```
 
-These readable Markdown files store course-relevant goals, constraints, habit anchors, contextualized expressions, audio source classes, per-ability evidence, starter-function coverage, corrections, and scheduled retests. They remain in the user's workspace, not the installed Skill directory. A bundled validator checks structure and internal consistency without claiming that the recorded learning result is true.
+These readable Markdown files store course-relevant goals, constraints, habit anchors, contextualized expressions, audio source classes, per-ability evidence, starter-function coverage, recurring-error observations, optional micro-immersion, and scheduled retests. They remain in the user's workspace, not the installed Skill directory. A bundled validator checks structure and internal consistency without claiming that the recorded learning result is true.
 
 The repository contains no telemetry, account integration, or background service. Codex and user-authorized tools may access external sources when a lesson needs reliable language material; those products' privacy rules still apply.
 
@@ -188,7 +192,7 @@ The design draws from Kazuma's public discussions of sound-first imitation, usef
 
 Those practices are not treated as one scientifically validated package. The Skill checks individual choices against second-language acquisition research on pronunciation instruction, formulaic sequences, explicit grammar, interaction and corrective feedback, spacing and retrieval, meaning-focused input, and self-regulation. See [the evidence matrix and guardrails](references/evidence-and-guardrails.md).
 
-The README's use of visual navigation was informed by the language-learning section of [byoungd/up](https://github.com/byoungd/up). All copy and artwork in this repository are original; no upstream photos or illustrations are reused.
+The README's use of visual navigation was informed by the language-learning section of [byoungd/up](https://github.com/byoungd/up). The recurring-pattern and interleaving interaction takes product-design inspiration from [m98/fluent](https://github.com/m98/fluent), the optional piggyback practice from [hamsamilton/lang-tutor](https://github.com/hamsamilton/lang-tutor), and the single visible next action from [learn-anything-skill](https://github.com/vesperchinn/learn-anything-skill). These repositories are interaction-design references, not research evidence. All implementation, copy, and artwork here are original.
 
 ## Repository structure
 

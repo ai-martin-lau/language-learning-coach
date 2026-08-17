@@ -48,10 +48,11 @@ Add this table to `progress.md`:
 ```
 
 - IDs use `E01` or higher.
-- Categories use `meaning`, `retrieval`, `register`, `script`, `interaction_repair`, `pronunciation`, or `other`.
+- Categories use `meaning`, `form_retrieval`, `register`, `script`, `interaction_repair`, `pronunciation`, or `other`.
 - States use `observing`, `recurring`, or `resolved`.
 - `observing` requires at least one real lesson date.
 - `recurring` and `resolved` require observations on at least two distinct real lesson dates.
+- `resolved` is a queue-priority state after a successful no-answer changed-condition task, not a permanent mastery claim; its truth still requires the recorded lesson evidence and cannot be proven from the row alone.
 - Observation dates must exist as lesson headings, must not be in the future, and may not be duplicated.
 - Linked phrase IDs must exist.
 - The observed problem and next discrimination task must be substantive.

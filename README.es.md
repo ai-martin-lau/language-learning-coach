@@ -82,6 +82,10 @@ Si tu objetivo de viaje incluye comprensión y expresión oral, una lección tí
 7. corregir uno o dos problemas que afecten directamente al éxito de la tarea y repetirla inmediatamente;
 8. volver a intentarlo más adelante tras cambiar el lugar, la hora, la persona, el objeto o la condición.
 
+Cada vez que retomas el aprendizaje, el coach empieza por mostrar una única tarea siguiente y una condición concreta para darla por completada. Un error aislado se mantiene como observación; un patrón solo entra en la cola de errores recurrentes si aparece en clases reales celebradas en al menos dos fechas distintas. Cuando realmente hay que distinguir entre patrones activos en una misma situación, el coach puede intercalar un máximo de dos dentro de esa tarea, en lugar de practicar cada uno por separado y en bloque.
+
+También puedes optar por una acción de microinmersión de unos 30 segundos vinculada a algo que ya haces, como abrir un mapa o consultar una reserva. No añade automáticamente contenido nuevo. Informar de que la has completado solo deja constancia de la práctica; no mejora el nivel de evidencia de ninguna destreza.
+
 El orden cambia para objetivos exclusivamente de lectura o escritura, necesidades de accesibilidad, sistemas de escritura nuevos, contrastes de tono o acento tonal, flexión compleja, honoríficos, variedades regionales o situaciones de diglosia. Viajar es la ruta principal; los objetivos de trabajo, exámenes, lectura, escritura, contenidos audiovisuales y lengua de herencia siguen estando disponibles cuando existen recursos fiables.
 
 ## Una microlección, cuatro pasos visibles
@@ -178,7 +182,7 @@ language-learning/<language-slug>/
 └── progress.md       # misiones de viaje, reevaluaciones y evidencia de clase
 ```
 
-Estos archivos Markdown legibles guardan objetivos y restricciones pertinentes para el curso, anclas de hábito, expresiones contextualizadas, clases de fuente de audio, evidencia por destreza, cobertura de funciones iniciales, correcciones y reevaluaciones programadas. Permanecen en el espacio de trabajo del usuario, no en el directorio donde está instalada la Skill. Un validador incluido comprueba la estructura y la coherencia interna sin afirmar que el resultado de aprendizaje registrado sea verdadero.
+Estos archivos Markdown legibles guardan objetivos y restricciones pertinentes para el curso, anclas de hábito, expresiones contextualizadas, clases de fuente de audio, evidencia por destreza, cobertura de funciones iniciales, observaciones de errores recurrentes, microinmersión opcional y reevaluaciones programadas. Permanecen en el espacio de trabajo del usuario, no en el directorio donde está instalada la Skill. Un validador incluido comprueba la estructura y la coherencia interna sin afirmar que el resultado de aprendizaje registrado sea verdadero.
 
 El repositorio no contiene telemetría, integración de cuentas ni servicios en segundo plano. Codex y las herramientas autorizadas por el usuario pueden acceder a fuentes externas cuando una lección necesite material lingüístico fiable; siguen aplicándose las políticas de privacidad de esos productos.
 
@@ -188,7 +192,7 @@ El diseño se inspira en las explicaciones públicas de Kazuma sobre imitar prim
 
 Estas prácticas no se tratan como un único sistema validado científicamente. La Skill contrasta cada decisión con investigaciones sobre adquisición de segundas lenguas relacionadas con la enseñanza de la pronunciación, las secuencias formulaicas, la gramática explícita, la interacción y la corrección, el espaciamiento y la recuperación, el input orientado al significado y la autorregulación. Consulta [la matriz de evidencia y las salvaguardas](references/evidence-and-guardrails.md).
 
-La navegación visual de este README toma como referencia la sección de aprendizaje de idiomas de [byoungd/up](https://github.com/byoungd/up). Todo el texto y las imágenes de este repositorio son originales; no se han reutilizado fotos ni ilustraciones del proyecto de referencia.
+La navegación visual de este README toma como referencia la sección de aprendizaje de idiomas de [byoungd/up](https://github.com/byoungd/up). Para el diseño de la interacción con patrones recurrentes y práctica intercalada se tomaron ideas de producto de [m98/fluent](https://github.com/m98/fluent); para la práctica opcional vinculada a un hábito, de [hamsamilton/lang-tutor](https://github.com/hamsamilton/lang-tutor); y para mostrar una única acción siguiente, de [learn-anything-skill](https://github.com/vesperchinn/learn-anything-skill). Estos repositorios son referencias de diseño de interacción, no fuentes de evidencia científica. Toda la implementación, los textos y el material gráfico de este repositorio son originales.
 
 ## Estructura del repositorio
 

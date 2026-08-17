@@ -42,6 +42,16 @@ class ValidateWorkspaceTests(unittest.TestCase):
                 "- 可观察的目标：完成测试旅行任务",
             ),
             ("profile.md", "- 优先情境：待填写", "- 优先情境：旅行"),
+            (
+                "progress.md",
+                "- 本次唯一重点：待填写",
+                "- 本次唯一重点：完成一个测试旅行任务",
+            ),
+            (
+                "progress.md",
+                "- 最小完成任务：待填写",
+                "- 最小完成任务：在无答案条件下完成核心请求",
+            ),
             ("phrase-bank.md", "- 情境：待填写", "- 情境：测试旅行场景"),
             ("phrase-bank.md", "- 模态：声音／文字／混合／其他", "- 模态：混合"),
             ("phrase-bank.md", "- 目标表达：待填写", "- 目标表达：test phrase"),
@@ -134,6 +144,29 @@ class ValidateWorkspaceTests(unittest.TestCase):
                 "### 2026-08-16",
                 f"### {lesson_date}\n\n### 2026-08-16",
             )
+
+    def set_error_pattern(
+        self,
+        *,
+        pattern_id="E01",
+        category="form_retrieval",
+        observation_dates="2026-08-16",
+        phrase_ids="P001",
+        problem="无法在酒店场景中无提示提取问候",
+        next_task="在新酒店场景中区分并提取问候",
+        state="observing",
+    ):
+        path = self.workspace / "progress.md"
+        lines = path.read_text(encoding="utf-8").splitlines()
+        header = "| 模式编号 | 类别 | 观察日期 | 关联语块 | 观察到的问题 | 下一辨别任务 | 状态 |"
+        header_index = lines.index(header)
+        row_index = header_index + 2
+        self.assertEqual("|  |  |  |  |  |  |  |", lines[row_index])
+        lines[row_index] = (
+            f"| {pattern_id} | {category} | {observation_dates} | {phrase_ids} | "
+            f"{problem} | {next_task} | `{state}` |"
+        )
+        path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     def duplicate_phrase_block(self, phrase_id):
         path = self.workspace / "phrase-bank.md"
@@ -327,6 +360,12 @@ class ValidateWorkspaceTests(unittest.TestCase):
             ("phrase-bank.md", "- 表达与语域核实：待填写", "missing field '表达与语域核实'"),
             ("phrase-bank.md", "- 声音引擎或说话人：待填写", "missing field '声音引擎或说话人'"),
             ("progress.md", "- 兴趣输入：待填写", "missing field '兴趣输入'"),
+            ("progress.md", "- 微沉浸状态：off", "missing field '微沉浸状态'"),
+            (
+                "progress.md",
+                "- 微沉浸触发与单项动作：—",
+                "missing field '微沉浸触发与单项动作'",
+            ),
             (
                 "profile.md",
                 "- 目标文字脚本：待填写（latin／hangul／japanese／arabic／cyrillic／greek／hebrew／devanagari／thai／han／other／not_applicable）",
@@ -343,6 +382,124 @@ class ValidateWorkspaceTests(unittest.TestCase):
                     path.write_text(text.replace(line + "\n", "", 1), encoding="utf-8")
                     report = validate_workspace.validate(workspace)
                     self.assert_error_contains(report, expected)
+
+    def test_progress_requires_recurring_error_table(self):
+        path = self.workspace / "progress.md"
+        text = path.read_text(encoding="utf-8")
+        start = text.index("## 反复错误队列")
+        end = text.index("## 生活嵌入与真实使用", start)
+        path.write_text(text[:start] + text[end:], encoding="utf-8")
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "missing table header 模式编号")
+
+    def test_valid_observing_error_pattern_passes(self):
+        self.set_error_pattern()
+        report = validate_workspace.validate(self.workspace)
+        self.assertTrue(report.ok, report.errors)
+
+    def test_error_pattern_id_category_and_state_use_declared_enums(self):
+        self.set_error_pattern(pattern_id="E00", category="grammar", state="mastered")
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "invalid error pattern ID 'E00'")
+        self.assert_error_contains(report, "invalid error category 'grammar'")
+        self.assert_error_contains(report, "invalid error pattern state 'mastered'")
+
+    def test_error_pattern_phrase_references_must_exist(self):
+        self.set_error_pattern(phrase_ids="P001, P999")
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "unknown phrase reference P999")
+
+    def test_duplicate_error_pattern_id_is_rejected(self):
+        self.set_error_pattern()
+        path = self.workspace / "progress.md"
+        lines = path.read_text(encoding="utf-8").splitlines()
+        row_index = next(index for index, line in enumerate(lines) if line.startswith("| E01 |"))
+        lines.insert(row_index + 1, lines[row_index])
+        path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "duplicate error pattern ID E01")
+
+    def test_error_pattern_requires_substantive_problem_and_discrimination_task(self):
+        self.set_error_pattern(problem="待填写", next_task="—")
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "unresolved '观察到的问题'")
+        self.assert_error_contains(report, "unresolved '下一辨别任务'")
+
+    def test_error_pattern_date_must_use_iso_format(self):
+        self.set_error_pattern(observation_dates="2026/08/16")
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "invalid observation date '2026/08/16'")
+
+    def test_recurring_error_pattern_requires_two_distinct_lesson_dates(self):
+        self.set_error_pattern(state="recurring")
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "recurring state requires at least 2 distinct lesson dates")
+
+    def test_resolved_error_pattern_requires_two_distinct_lesson_dates(self):
+        self.set_error_pattern(state="resolved")
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "resolved state requires at least 2 distinct lesson dates")
+
+    def test_error_pattern_requires_at_least_one_phrase_reference(self):
+        self.set_error_pattern(phrase_ids="—")
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "error pattern requires at least one phrase reference")
+
+    def test_recurring_error_pattern_accepts_two_distinct_lesson_dates(self):
+        self.set_lesson_date("2026-08-15")
+        self.set_error_pattern(
+            observation_dates="2026-08-15, 2026-08-16",
+            state="recurring",
+        )
+        report = validate_workspace.validate(self.workspace)
+        self.assertTrue(report.ok, report.errors)
+
+    def test_error_pattern_dates_must_be_unique_real_lesson_dates(self):
+        self.set_error_pattern(observation_dates="2026-08-15, 2026-08-15")
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "duplicate observation date 2026-08-15")
+        self.assert_error_contains(report, "observation date 2026-08-15 has no matching lesson heading")
+
+    def test_error_pattern_future_date_is_rejected(self):
+        future = (date.today() + timedelta(days=1)).isoformat()
+        self.set_error_pattern(observation_dates=future)
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, f"observation date {future} cannot be in the future")
+
+    def test_micro_immersion_status_uses_declared_enum(self):
+        self.replace("progress.md", "- 微沉浸状态：off", "- 微沉浸状态：automatic")
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "invalid micro-immersion status 'automatic'")
+
+    def test_enabled_micro_immersion_requires_one_concrete_action(self):
+        self.replace("progress.md", "- 微沉浸状态：off", "- 微沉浸状态：on")
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "enabled micro-immersion requires a concrete trigger and action")
+
+    def test_enabled_micro_immersion_with_one_concrete_action_passes(self):
+        self.replace("progress.md", "- 微沉浸状态：off", "- 微沉浸状态：on")
+        self.replace(
+            "progress.md",
+            "- 微沉浸触发与单项动作：—",
+            "- 微沉浸触发与单项动作：打开地图后无答案回忆一次问路表达",
+        )
+        report = validate_workspace.validate(self.workspace)
+        self.assertTrue(report.ok, report.errors)
+
+    def test_started_workspace_requires_one_focus_and_completion_task(self):
+        self.replace(
+            "progress.md",
+            "- 本次唯一重点：完成一个测试旅行任务",
+            "- 本次唯一重点：待填写",
+        )
+        self.replace(
+            "progress.md",
+            "- 最小完成任务：在无答案条件下完成核心请求",
+            "- 最小完成任务：待填写",
+        )
+        report = validate_workspace.validate(self.workspace)
+        self.assert_error_contains(report, "started workspace requires substantive '本次唯一重点'")
+        self.assert_error_contains(report, "started workspace requires substantive '最小完成任务'")
 
     def test_duplicate_phrase_id_is_reported_with_lines(self):
         path = self.workspace / "phrase-bank.md"
