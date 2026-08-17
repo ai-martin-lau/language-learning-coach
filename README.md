@@ -18,9 +18,9 @@ It is designed first for travel languages such as French, German, Italian, Spani
 
 ## Learn for the trip, not for the streak
 
-![Six travel practice areas: transport, accommodation, food, directions, shopping, and communication repair](assets/readme/travel-scenarios.svg)
+![Six core travel practice areas: transport, accommodation, food, directions, shopping, and communication repair](assets/readme/travel-scenarios.svg)
 
-The default travel route concentrates on six outcomes:
+The default travel route tracks seven outcomes. The visual shows the six everyday interaction areas; a seventh, safety-limited basic-help outcome is included in the route:
 
 - **Transport:** ask about tickets, platforms, times, routes, and changes.
 - **Accommodation:** check in, confirm details, and describe a simple problem.
@@ -28,6 +28,7 @@ The default travel route concentrates on six outcomes:
 - **Directions:** ask, identify landmarks, and confirm that you understood.
 - **Shopping:** handle price, quantity, size, availability, and payment.
 - **Communication repair:** ask someone to repeat, slow down, write, point, or rephrase.
+- **Basic help:** handle a pharmacy, lost-property, or other non-emergency request without treating serious emergencies as A2 tasks.
 
 Each active phrase is stored with your version, a replaceable slot, a likely follow-up, and a repair expression. The goal is not a frozen phrasebook: it is completing the task when one detail changes.
 
@@ -100,7 +101,9 @@ The evidence ladder is:
 supported → independent → changed condition → delayed retention
 ```
 
-The workspace records the task, prompt level, evidence environment, result, date, and next retest. Real-person or real-world checks can strengthen evidence, but the project never awards an A2 certificate. How quickly you progress depends on the language, your starting point, practice time, resource quality, and performance that survives transfer and delay.
+The workspace records the task, prompt level, evidence environment, **response medium**, result, date, and next retest. That distinction prevents a typed romanization, an unobserved “I said it,” or a task still waiting for an answer from being stored as audible speech or writing. A travel mission moves from training to same-session, changed-condition, delayed, and real-world checks only when matching evidence exists.
+
+One successful mission is not A2. The internal A2-style screen passes only after at least five of the seven defined travel domains reach delayed or real-world checks with distinct core phrases, communication repair is included, all six tracked abilities have retained evidence linked to exact mission requirements, and at least one mission passes a real-person or real-world check. Only then may the coach say that the evidence is consistent with A2-style performance **in the tested tasks** and name every gap. This is still not a CEFR result; only an appropriate external assessment can establish one. How quickly you progress depends on the language, your starting point, practice time, resource quality, and performance that survives transfer and delay.
 
 ## Sound sources are never hidden
 
@@ -112,6 +115,8 @@ For spoken goals, a new phrase is heard before its written answer when playable 
 | `native_traceable` | Traceable native-speaker recording with suitable variety, context, and register | Model within the source's documented scope |
 | `tts` | Clearly labelled synthetic speech fallback | Initial listening and rehearsal, not native-model or pronunciation evidence |
 | `pending` | A reliable model has not yet been delivered | The spoken or pronunciation step pauses instead of being invented |
+
+For TTS, the workspace separately records the expression/register check, target variety, engine or voice, delivered file/player, and technical validation. A playable waveform does not verify that the wording is natural.
 
 Local WAV files are structurally validated before delivery. Technical validity never substitutes for source reliability, correct variety, actual playback, or pronunciation assessment.
 
@@ -164,7 +169,7 @@ language-learning/<language-slug>/
 ├── profile.md
 ├── phrase-bank.md
 ├── function-map.md
-└── progress.md
+└── progress.md       # travel mission map, retests, and lesson evidence
 ```
 
 These readable Markdown files store course-relevant goals, constraints, habit anchors, contextualized expressions, audio source classes, per-ability evidence, starter-function coverage, corrections, and scheduled retests. They remain in the user's workspace, not the installed Skill directory. A bundled validator checks structure and internal consistency without claiming that the recorded learning result is true.

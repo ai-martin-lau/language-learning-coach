@@ -5,9 +5,14 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass, field
+from datetime import date
 from pathlib import Path
 import re
+import shlex
 import sys
+import unicodedata
+
+import validate_audio
 
 
 EXIT_INTERNAL = 1
@@ -37,6 +42,29 @@ EVIDENCE_ENVIRONMENTS = (
     "self_report",
     "not_applicable",
 )
+RESPONSE_MEDIA = (
+    "meaning_response",
+    "target_text",
+    "romanization",
+    "audio",
+    "action",
+    "self_report",
+    "not_applicable",
+)
+TARGET_SCRIPTS = (
+    "latin",
+    "hangul",
+    "japanese",
+    "arabic",
+    "cyrillic",
+    "greek",
+    "hebrew",
+    "devanagari",
+    "thai",
+    "han",
+    "other",
+    "not_applicable",
+)
 RESULT_STATES = (
     "new",
     "recognized",
@@ -63,6 +91,28 @@ FUNCTION_STATES = (
     "retested",
     "not_applicable",
 )
+MISSION_STATES = (
+    "planned",
+    "training",
+    "same_session_passed",
+    "changed_condition_passed",
+    "delayed_passed",
+    "field_checked",
+    "not_selected",
+)
+MISSION_ROLES = ("core", "follow_up", "repair")
+A2_SCREEN_STATES = ("not_ready", "evidence_consistent_in_tested_tasks")
+A2_READY_CONCLUSION = "证据与已测试旅行任务中的 A2 风格表现一致；正式 CEFR 未确认"
+A2_NOT_READY_CONCLUSION = "只报告单项任务的实际证据阶梯"
+TRAVEL_DOMAINS = (
+    "transport",
+    "lodging",
+    "eating",
+    "shopping",
+    "directions_local_geography",
+    "communication_repair",
+    "basic_help",
+)
 
 PROFILE_FIELDS = (
     "目标语言",
@@ -82,6 +132,7 @@ PROFILE_FIELDS = (
     "已有学习经历",
     "声音特征",
     "文字系统与转写",
+    "目标文字脚本",
     "语法与词形",
     "语域、方言或双言现象",
     "每日最低任务",
@@ -114,13 +165,33 @@ PHRASE_FIELDS = (
     "变体与语域",
     "发音、转写或动作提示",
     "来源类别",
+    "表达与语域核实",
     "来源链接或文件",
     "目标变体",
+    "声音引擎或说话人",
     "交付方式",
     "来源支持内容",
     "技术验证",
     "首学日期",
     "备注",
+)
+SUBSTANTIVE_PHRASE_FIELDS = (
+    "情境",
+    "模态",
+    "目标表达",
+    "含义或交际功能",
+    "学习者自己的版本",
+    "变体与语域",
+)
+
+AUDIO_SOURCE_FIELDS = (
+    "表达与语域核实",
+    "来源链接或文件",
+    "目标变体",
+    "声音引擎或说话人",
+    "交付方式",
+    "来源支持内容",
+    "技术验证",
 )
 
 PROGRESS_FIELDS = (
@@ -140,11 +211,14 @@ EVIDENCE_HEADER = (
     "提示级别",
     "结果",
     "证据环境",
+    "回答媒介",
     "表现记录",
     "证据日期",
     "下次复测",
 )
 FUNCTION_HEADER = ("功能编号", "沟通功能", "本期优先级", "状态", "语块编号", "最近证据", "下一步")
+MISSION_HEADER = ("任务编号", "任务域", "胜利条件", "证据要求", "状态", "最近证据", "下一变化")
+A2_SCREEN_HEADER = ("筛查编号", "状态", "达标任务域", "能力覆盖", "现实检查", "结论")
 RETEST_HEADER = ("编号", "维度", "到期日", "无答案任务", "提示级别", "迁移条件", "安排原因")
 
 FIELD_RE = re.compile(r"^\s*-\s+([^：:\n]+?)\s*[：:]\s*(.*?)\s*$")
@@ -152,7 +226,80 @@ PHRASE_HEADING_RE = re.compile(r"^##\s+(P\d{3,})\s*(?:[—–-]\s*.*)?$")
 POSSIBLE_PHRASE_HEADING_RE = re.compile(r"^##\s+((?:P\S+)|(?:[A-Za-z]\d+))")
 FUNCTION_ID_RE = re.compile(r"F(?:0[1-9]|[12]\d|30)\Z")
 PHRASE_ID_RE = re.compile(r"P\d{3,}\Z")
+MISSION_ID_RE = re.compile(r"M\d{2,}\Z")
 TABLE_SEPARATOR_RE = re.compile(r":?-{3,}:?\Z")
+ISO_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}\Z")
+LESSON_DATE_HEADING_RE = re.compile(r"^###\s+(\d{4}-\d{2}-\d{2})(?:\s*.*)?$")
+LESSON_SECTION_HEADING = "## 课次记录"
+LESSON_TEMPLATE_HEADING = "### YYYY-MM-DD"
+PERFORMANCE_REFERENCE_RE = {
+    "meaning_response": re.compile(
+        r"^response:\s*(?P<payload>\S.*)", flags=re.IGNORECASE
+    ),
+    "target_text": re.compile(
+        r"^response:\s*(?P<payload>\S.*)", flags=re.IGNORECASE
+    ),
+    "romanization": re.compile(
+        r"^response:\s*(?P<payload>\S.*)", flags=re.IGNORECASE
+    ),
+    "audio": re.compile(
+        r"^(?P<kind>file|attachment):\s*(?P<payload>\S.*)",
+        flags=re.IGNORECASE,
+    ),
+    "action": re.compile(
+        r"^action:\s*(?P<payload>\S.*)", flags=re.IGNORECASE
+    ),
+    "self_report": re.compile(
+        r"^self_report:\s*(?P<payload>\S.*)", flags=re.IGNORECASE
+    ),
+}
+UNANSWERED_PAYLOAD_RE = re.compile(
+    r"等待用户作答|(?:(?:仍|尚)在)?等(?:待)?(?:用户|学习者)(?:作答|回答|回应)|"
+    r"仍未收到(?:用户)?回答|awaiting (?:the )?(?:user|learner)(?:'s)? "
+    r"(?:answer|response)|(?:user|learner) response (?:not|still not) received",
+    flags=re.IGNORECASE,
+)
+SELF_REPORT_PAYLOAD_RE = re.compile(
+    r"自述|自报|self[-_ ]?report(?:ed|s|ing)?", flags=re.IGNORECASE
+)
+FULL_PROMPT_ACTION_RE = re.compile(
+    r"(?<!未)(?<!非)(?<!没有)(?<!不是)在完整提示下|(?<!not )with (?:a )?full prompt",
+    flags=re.IGNORECASE,
+)
+
+HAN_RANGES = (
+    (0x3400, 0x4DBF),
+    (0x4E00, 0x9FFF),
+    (0xF900, 0xFAFF),
+    (0x20000, 0x2FA1F),
+)
+SCRIPT_RANGES = {
+    "latin": ((0x0041, 0x005A), (0x0061, 0x007A), (0x00C0, 0x024F), (0x1E00, 0x1EFF)),
+    "hangul": (
+        (0x1100, 0x11FF),
+        (0x3130, 0x318F),
+        (0xA960, 0xA97F),
+        (0xAC00, 0xD7AF),
+        (0xD7B0, 0xD7FF),
+    ),
+    "japanese": ((0x3040, 0x30FF), (0x31F0, 0x31FF), (0xFF66, 0xFF9D)) + HAN_RANGES,
+    "arabic": ((0x0600, 0x06FF), (0x0750, 0x077F), (0x08A0, 0x08FF)),
+    "cyrillic": ((0x0400, 0x052F),),
+    "greek": ((0x0370, 0x03FF), (0x1F00, 0x1FFF)),
+    "hebrew": ((0x0590, 0x05FF),),
+    "devanagari": ((0x0900, 0x097F),),
+    "thai": ((0x0E00, 0x0E7F),),
+    "han": HAN_RANGES,
+}
+
+RESULT_RANK = {
+    "new": 0,
+    "recognized": 1,
+    "cued": 2,
+    "independent": 3,
+    "flexible": 4,
+    "retained": 5,
+}
 
 
 @dataclass
@@ -170,6 +317,32 @@ class ValidationReport:
 class MarkdownTable:
     header_line: int
     rows: tuple[tuple[int, tuple[str, ...]], ...]
+
+
+@dataclass(frozen=True)
+class EvidenceRecord:
+    dimension: str
+    result: str
+    environment: str
+
+
+@dataclass(frozen=True)
+class EvidenceRequirement:
+    phrase_id: str
+    dimension: str
+    role: str
+
+    @property
+    def reference(self) -> str:
+        return f"{self.phrase_id}:{self.dimension}:{self.role}"
+
+
+@dataclass(frozen=True)
+class MissionRecord:
+    mission_id: str
+    domain: str
+    state: str
+    requirements: tuple[EvidenceRequirement, ...]
 
 
 def clean_value(value: str) -> str:
@@ -266,7 +439,18 @@ def is_placeholder(value: str) -> bool:
     lowered = plain.casefold()
     if not plain or re.fullmatch(r"[-—–…]+", plain):
         return True
-    if lowered in {"pending", "todo", "tbd", "unknown", "n/a", "na", "not_applicable", "不适用"}:
+    if lowered in {
+        "pending",
+        "todo",
+        "tbd",
+        "unknown",
+        "n/a",
+        "na",
+        "not_applicable",
+        "不适用",
+        "声音／文字／混合／其他",
+        "声音/文字/混合/其他",
+    }:
         return True
     return lowered.startswith(
         (
@@ -277,6 +461,7 @@ def is_placeholder(value: str) -> bool:
             "待安排",
             "待复测",
             "待建立",
+            "尚待",
             "尚未",
             "未填写",
             "未测试",
@@ -287,9 +472,76 @@ def is_placeholder(value: str) -> bool:
     )
 
 
-def validate_profile(lines: list[str], errors: list[str]) -> None:
+def parse_iso_date(value: str) -> date | None:
+    plain = clean_value(value)
+    if not ISO_DATE_RE.fullmatch(plain):
+        return None
+    try:
+        return date.fromisoformat(plain)
+    except ValueError:
+        return None
+
+
+def validate_profile(lines: list[str], errors: list[str]) -> tuple[str, dict[str, str]]:
     fields = parse_fields(lines)
     require_fields("profile.md", fields, PROFILE_FIELDS, errors)
+    values = {label: field_value(fields, label) for label in PROFILE_FIELDS}
+    target_script = field_value(fields, "目标文字脚本")
+    if not is_placeholder(target_script) and target_script not in TARGET_SCRIPTS:
+        errors.append(
+            f"profile.md: invalid target script '{target_script}'; expected one of: "
+            f"{', '.join(TARGET_SCRIPTS)}"
+        )
+    return target_script, values
+
+
+def validate_lesson_dates(lines: list[str], errors: list[str]) -> set[date]:
+    lesson_dates: set[date] = set()
+    section_indexes = [index for index, line in enumerate(lines) if line.strip() == LESSON_SECTION_HEADING]
+    if not section_indexes:
+        errors.append(f"progress.md: missing section '{LESSON_SECTION_HEADING}'")
+        return lesson_dates
+    if len(section_indexes) > 1:
+        line_numbers = ", ".join(str(index + 1) for index in section_indexes)
+        errors.append(
+            f"progress.md: duplicate section '{LESSON_SECTION_HEADING}' on lines {line_numbers}"
+        )
+
+    start = section_indexes[0] + 1
+    end = len(lines)
+    for index in range(start, len(lines)):
+        if lines[index].startswith("## ") and not lines[index].startswith("### "):
+            end = index
+            break
+
+    for index in range(start, end):
+        line = lines[index].strip()
+        if not line.startswith("### "):
+            continue
+        if line == LESSON_TEMPLATE_HEADING:
+            continue
+        match = LESSON_DATE_HEADING_RE.match(line)
+        if match is None:
+            errors.append(
+                f"progress.md: line {index + 1}: lesson heading must start with ISO "
+                f"YYYY-MM-DD, found '{clean_value(line[4:])}'"
+            )
+            continue
+        value = clean_value(match.group(1))
+        lesson_date = parse_iso_date(value)
+        if lesson_date is None:
+            errors.append(
+                f"progress.md: line {index + 1}: lesson date heading must use ISO YYYY-MM-DD, "
+                f"found '{value}'"
+            )
+        elif lesson_date > date.today():
+            errors.append(
+                f"progress.md: line {index + 1}: lesson date heading cannot be later than today, "
+                f"found '{value}'"
+            )
+        else:
+            lesson_dates.add(lesson_date)
+    return lesson_dates
 
 
 def phrase_blocks(lines: list[str], errors: list[str]) -> list[tuple[str, int, int]]:
@@ -342,26 +594,123 @@ def validate_source_claims(
         )
         return
 
-    source_text = " ".join(
-        field_value(fields, label)
-        for label in ("来源链接或文件", "交付方式", "来源支持内容", "技术验证")
-    )
     native_pattern = r"native_official|native_traceable|母语者(?:录音|音频|发音|示范|原声)|真人(?:录音|音频|发音)|native[- ]speaker (?:recording|audio|model|voice)|native (?:recording|audio|model|voice)"
     native_negation = r"不是母语者|并非母语者|非母语者|未由母语者|(?:与|和)母语者.*(?:不同|有别)|不同于母语者|不等于母语者|不能(?:证明|作为|充当).*母语者|不(?:代表|构成).*母语者|not (?:a )?native|different from .*native|cannot (?:prove|establish|serve as).*native"
-    tts_pattern = r"\btts\b|合成语音|synthetic (?:speech|voice|audio)"
+    tts_pattern = (
+        r"\btts\b|合成语音|系统语音(?:引擎)?|语音合成器|"
+        r"synthetic (?:speech|voice|audio)|system (?:speech|voice)(?: engine)?|"
+        r"voice engine|speech synthesizer"
+    )
     tts_negation = r"不是\s*tts|并非\s*tts|非\s*tts|不是合成语音|并非合成语音|not (?:tts|synthetic)"
 
-    if source_class == "tts" and has_affirmative_claim(
-        source_text, native_pattern, native_negation
-    ):
-        errors.append(
-            f"phrase-bank.md:{phrase_id}: source class tts is presented as a native recording"
+    for label in AUDIO_SOURCE_FIELDS:
+        value = field_value(fields, label)
+        if source_class == "tts" and has_affirmative_claim(
+            value, native_pattern, native_negation
+        ):
+            errors.append(
+                f"phrase-bank.md:{phrase_id}: source class tts is presented as a native "
+                f"recording in field '{label}'"
+            )
+        if source_class in {"native_official", "native_traceable"} and has_affirmative_claim(
+            value, tts_pattern, tts_negation
+        ):
+            errors.append(
+                f"phrase-bank.md:{phrase_id}: synthetic speech is labelled as {source_class} "
+                f"in field '{label}'"
+            )
+
+
+def payload_contains_script(payload: str, target_script: str) -> bool:
+    ranges = SCRIPT_RANGES[target_script]
+    for character in unicodedata.normalize("NFKC", payload):
+        if not unicodedata.category(character).startswith("L"):
+            continue
+        codepoint = ord(character)
+        if any(start <= codepoint <= end for start, end in ranges):
+            return True
+    return False
+
+
+def normalized_phrase_identity(
+    fields: dict[str, list[tuple[int, str]]],
+) -> tuple[str, str, str]:
+    normalized_fields: list[str] = []
+    for label in ("目标表达", "含义或交际功能", "学习者自己的版本"):
+        normalized = unicodedata.normalize(
+            "NFKC", clean_value(field_value(fields, label))
+        ).casefold()
+        without_format_controls = "".join(
+            character
+            for character in normalized
+            if unicodedata.category(character) != "Cf"
         )
-    if source_class in {"native_official", "native_traceable"} and has_affirmative_claim(
-        source_text, tts_pattern, tts_negation
-    ):
+        normalized_fields.append(" ".join(without_format_controls.split()))
+    return tuple(normalized_fields)
+
+
+def validate_audio_file_reference(
+    phrase_id: str,
+    line_number: int,
+    payload: str,
+    workspace: Path,
+    errors: list[str],
+) -> None:
+    try:
+        parts = shlex.split(payload)
+    except ValueError as exc:
         errors.append(
-            f"phrase-bank.md:{phrase_id}: synthetic speech is labelled as {source_class}"
+            f"phrase-bank.md:{phrase_id}: line {line_number}: invalid audio file payload: {exc}"
+        )
+        return
+    if not parts:
+        errors.append(
+            f"phrase-bank.md:{phrase_id}: line {line_number}: audio file payload has no path"
+        )
+        return
+
+    raw_path = Path(parts[0])
+    try:
+        workspace_root = workspace.resolve()
+        audio_path = (
+            raw_path.resolve()
+            if raw_path.is_absolute()
+            else (workspace_root / raw_path).resolve()
+        )
+    except (OSError, RuntimeError) as exc:
+        errors.append(
+            f"phrase-bank.md:{phrase_id}: line {line_number}: audio path cannot be resolved: "
+            f"{exc}"
+        )
+        return
+    if not raw_path.is_absolute():
+        try:
+            audio_path.relative_to(workspace_root)
+        except ValueError:
+            errors.append(
+                f"phrase-bank.md:{phrase_id}: line {line_number}: relative audio file must "
+                "stay inside the workspace"
+            )
+            return
+
+    if not audio_path.exists():
+        errors.append(
+            f"phrase-bank.md:{phrase_id}: line {line_number}: audio file does not exist: "
+            f"{audio_path}"
+        )
+        return
+    if not audio_path.is_file():
+        errors.append(
+            f"phrase-bank.md:{phrase_id}: line {line_number}: audio path is not a regular file: "
+            f"{audio_path}"
+        )
+        return
+    try:
+        validate_audio.validate(audio_path)
+    except (OSError, NotImplementedError, validate_audio.ValidationError) as exc:
+        errors.append(
+            f"phrase-bank.md:{phrase_id}: line {line_number}: audio file failed validation: "
+            f"{exc}"
         )
 
 
@@ -371,17 +720,23 @@ def validate_evidence_table(
     start: int,
     end: int,
     phrase_fields: dict[str, list[tuple[int, str]]],
+    workspace: Path,
+    target_script: str,
+    lesson_dates: set[date],
     errors: list[str],
-) -> None:
+) -> tuple[EvidenceRecord, ...]:
     table = find_table(
         "phrase-bank.md", lines, start, end, EVIDENCE_HEADER, errors, phrase_id
     )
     if table is None:
-        return
+        return ()
 
     seen_dimensions: dict[str, int] = {}
+    records: list[EvidenceRecord] = []
+    has_substantive_evidence = False
     source_class = field_value(phrase_fields, "来源类别")
     for line_number, cells in table.rows:
+        row_error_count = len(errors)
         if len(cells) != len(EVIDENCE_HEADER):
             errors.append(
                 f"phrase-bank.md:{phrase_id}: line {line_number}: expected "
@@ -393,8 +748,10 @@ def validate_evidence_table(
         prompt = row["提示级别"]
         result = row["结果"]
         environment = row["证据环境"]
+        response_medium = row["回答媒介"]
 
-        if dimension not in DIMENSIONS:
+        dimension_valid = dimension in DIMENSIONS
+        if not dimension_valid:
             errors.append(
                 f"phrase-bank.md:{phrase_id}: line {line_number}: invalid dimension '{dimension}'; "
                 f"expected one of: {', '.join(DIMENSIONS)}"
@@ -412,17 +769,27 @@ def validate_evidence_table(
                 f"phrase-bank.md:{phrase_id}: line {line_number}: invalid prompt level '{prompt}'; "
                 f"expected one of: {', '.join(PROMPT_LEVELS)}"
             )
-        if result not in RESULT_STATES:
+        result_valid = result in RESULT_STATES
+        if not result_valid:
             errors.append(
                 f"phrase-bank.md:{phrase_id}: line {line_number}: invalid result state '{result}'; "
                 f"expected one of: {', '.join(RESULT_STATES)}"
             )
-            continue
-        if environment not in EVIDENCE_ENVIRONMENTS:
+        environment_valid = environment in EVIDENCE_ENVIRONMENTS
+        if not environment_valid:
             errors.append(
                 f"phrase-bank.md:{phrase_id}: line {line_number}: invalid evidence environment "
                 f"'{environment}'; expected one of: {', '.join(EVIDENCE_ENVIRONMENTS)}"
             )
+        response_medium_valid = response_medium in RESPONSE_MEDIA
+        if not response_medium_valid:
+            errors.append(
+                f"phrase-bank.md:{phrase_id}: line {line_number}: invalid response medium "
+                f"'{response_medium}'; expected one of: {', '.join(RESPONSE_MEDIA)}"
+            )
+
+        if not result_valid:
+            continue
 
         if result == "not_applicable" and prompt != "not_applicable":
             errors.append(
@@ -448,10 +815,20 @@ def validate_evidence_table(
                 f"phrase-bank.md:{phrase_id}: line {line_number}: result not_applicable requires "
                 "evidence environment not_applicable"
             )
+        if result == "not_applicable" and response_medium != "not_applicable":
+            errors.append(
+                f"phrase-bank.md:{phrase_id}: line {line_number}: result not_applicable requires "
+                "response medium not_applicable"
+            )
         if result not in {"new", "not_applicable"} and environment == "not_applicable":
             errors.append(
                 f"phrase-bank.md:{phrase_id}: line {line_number}: result {result} requires "
                 "a recorded evidence environment"
+            )
+        if result not in {"new", "not_applicable"} and response_medium == "not_applicable":
+            errors.append(
+                f"phrase-bank.md:{phrase_id}: line {line_number}: result {result} requires "
+                "a recorded response medium"
             )
         if (
             dimension == "interaction"
@@ -467,19 +844,54 @@ def validate_evidence_table(
                 f"phrase-bank.md:{phrase_id}: line {line_number}: untested new result requires "
                 "prompt level not_applicable"
             )
+        if (
+            result == "new"
+            and environment == "not_applicable"
+            and response_medium != "not_applicable"
+        ):
+            errors.append(
+                f"phrase-bank.md:{phrase_id}: line {line_number}: untested new result requires "
+                "response medium not_applicable"
+            )
         if result == "new" and environment != "not_applicable" and prompt == "not_applicable":
             errors.append(
                 f"phrase-bank.md:{phrase_id}: line {line_number}: attempted new result requires "
                 "a recorded prompt level"
             )
         if (
-            dimension == "pronunciation"
-            and result not in {"new", "not_applicable"}
-            and environment == "self_report"
+            result == "new"
+            and environment != "not_applicable"
+            and response_medium == "not_applicable"
         ):
             errors.append(
-                f"phrase-bank.md:{phrase_id}: line {line_number}: pronunciation evidence "
-                "cannot be upgraded from self_report"
+                f"phrase-bank.md:{phrase_id}: line {line_number}: attempted new result requires "
+                "a recorded response medium"
+            )
+        if (
+            result not in {"new", "not_applicable"}
+            and (environment == "self_report" or response_medium == "self_report")
+        ):
+            errors.append(
+                f"phrase-bank.md:{phrase_id}: line {line_number}: self_report cannot upgrade "
+                f"{dimension} above new"
+            )
+        if (
+            dimension in {"spoken_production", "pronunciation"}
+            and result not in {"new", "not_applicable"}
+            and response_medium != "audio"
+        ):
+            errors.append(
+                f"phrase-bank.md:{phrase_id}: line {line_number}: {dimension} above new requires "
+                "response medium audio"
+            )
+        if (
+            dimension == "writing"
+            and result not in {"new", "not_applicable"}
+            and response_medium != "target_text"
+        ):
+            errors.append(
+                f"phrase-bank.md:{phrase_id}: line {line_number}: writing above new requires "
+                "response medium target_text"
             )
         if (
             dimension == "listening"
@@ -490,43 +902,190 @@ def validate_evidence_table(
                 f"phrase-bank.md:{phrase_id}: line {line_number}: listening evidence requires "
                 "a delivered audio source class"
             )
-        if dimension == "listening" and result not in {"new", "not_applicable"}:
-            for label in (
-                "来源链接或文件",
-                "目标变体",
-                "交付方式",
-                "来源支持内容",
-                "技术验证",
-            ):
+        if (
+            dimension == "pronunciation"
+            and result not in {"new", "not_applicable"}
+            and source_class not in {"native_official", "native_traceable"}
+        ):
+            errors.append(
+                f"phrase-bank.md:{phrase_id}: line {line_number}: pronunciation evidence "
+                "requires native_official or native_traceable source class"
+            )
+        if dimension in {"listening", "pronunciation"} and result not in {
+            "new",
+            "not_applicable",
+        }:
+            for label in AUDIO_SOURCE_FIELDS:
                 value = field_value(phrase_fields, label)
                 if is_placeholder(value):
                     errors.append(
-                        f"phrase-bank.md:{phrase_id}: line {line_number}: listening evidence "
+                        f"phrase-bank.md:{phrase_id}: line {line_number}: {dimension} evidence "
                         f"cannot use unresolved audio source field '{label}' value '{value}'"
                     )
 
-        if result not in {"new", "not_applicable"} or (
+        substantive = result not in {"new", "not_applicable"} or (
             result == "new" and environment != "not_applicable"
-        ):
+        )
+        if substantive:
+            has_substantive_evidence = True
             for column in ("任务", "表现记录", "证据日期", "下次复测"):
                 if is_placeholder(row[column]):
                     errors.append(
                         f"phrase-bank.md:{phrase_id}: line {line_number}: result {result} "
                         f"cannot use unresolved '{column}' value '{row[column]}'"
                     )
+            reference_pattern = PERFORMANCE_REFERENCE_RE.get(response_medium)
+            if reference_pattern is not None:
+                reference_match = reference_pattern.match(clean_value(row["表现记录"]))
+                if reference_match is None:
+                    if response_medium == "audio":
+                        required_reference = "'file:' or 'attachment:'"
+                    else:
+                        prefix = (
+                            response_medium
+                            if response_medium in {"self_report", "action"}
+                            else "response"
+                        )
+                        required_reference = f"'{prefix}:'"
+                    errors.append(
+                        f"phrase-bank.md:{phrase_id}: line {line_number}: response medium "
+                        f"{response_medium} requires performance reference {required_reference}"
+                    )
+                else:
+                    payload = reference_match.group("payload").strip()
+                    if is_placeholder(payload):
+                        errors.append(
+                            f"phrase-bank.md:{phrase_id}: line {line_number}: response medium "
+                            f"{response_medium} cannot use unresolved performance reference "
+                            f"payload '{payload}'"
+                        )
+                    if UNANSWERED_PAYLOAD_RE.search(payload):
+                        errors.append(
+                            f"phrase-bank.md:{phrase_id}: line {line_number}: performance "
+                            "reference payload still awaits the learner response"
+                        )
+                    if (
+                        response_medium
+                        in {"meaning_response", "target_text", "romanization"}
+                        and SELF_REPORT_PAYLOAD_RE.search(payload)
+                    ):
+                        errors.append(
+                            f"phrase-bank.md:{phrase_id}: line {line_number}: {response_medium} "
+                            "performance payload cannot be self-report"
+                        )
+                    if (
+                        response_medium == "action"
+                        and result in {"independent", "flexible", "retained"}
+                        and FULL_PROMPT_ACTION_RE.search(payload)
+                    ):
+                        errors.append(
+                            f"phrase-bank.md:{phrase_id}: line {line_number}: {result} action "
+                            "payload contradicts prompt level none"
+                        )
+                    if response_medium == "target_text":
+                        if target_script == "not_applicable":
+                            errors.append(
+                                f"phrase-bank.md:{phrase_id}: line {line_number}: target_text "
+                                "evidence cannot use target script not_applicable"
+                            )
+                        elif is_placeholder(target_script):
+                            errors.append(
+                                f"phrase-bank.md:{phrase_id}: line {line_number}: target_text "
+                                "evidence requires a declared target script"
+                            )
+                        elif (
+                            target_script in SCRIPT_RANGES
+                            and not payload_contains_script(payload, target_script)
+                        ):
+                            errors.append(
+                                f"phrase-bank.md:{phrase_id}: line {line_number}: target_text "
+                                f"performance payload contains no {target_script} script "
+                                "characters"
+                            )
+                    if (
+                        response_medium == "audio"
+                        and reference_match.group("kind").casefold() == "file"
+                    ):
+                        validate_audio_file_reference(
+                            phrase_id, line_number, payload, workspace, errors
+                        )
+
+            evidence_date = parse_iso_date(row["证据日期"])
+            if evidence_date is None:
+                errors.append(
+                    f"phrase-bank.md:{phrase_id}: line {line_number}: evidence date must use "
+                    f"ISO YYYY-MM-DD, found '{row['证据日期']}'"
+                )
+            elif evidence_date > date.today():
+                errors.append(
+                    f"phrase-bank.md:{phrase_id}: line {line_number}: evidence date cannot be "
+                    f"later than today, found '{row['证据日期']}'"
+                )
+            elif evidence_date not in lesson_dates:
+                errors.append(
+                    f"phrase-bank.md:{phrase_id}: line {line_number}: evidence date "
+                    f"{evidence_date.isoformat()} has no matching progress.md lesson heading"
+                )
+
+            if result == "retained":
+                first_learning_value = field_value(phrase_fields, "首学日期")
+                first_learning_date = parse_iso_date(first_learning_value)
+                if first_learning_date is None:
+                    errors.append(
+                        f"phrase-bank.md:{phrase_id}: line {line_number}: retained result requires "
+                        "first learning date in ISO YYYY-MM-DD"
+                    )
+                elif evidence_date is not None and evidence_date <= first_learning_date:
+                    errors.append(
+                        f"phrase-bank.md:{phrase_id}: line {line_number}: retained evidence date "
+                        "must be later than first learning date"
+                    )
+
+        if (
+            len(errors) == row_error_count
+            and dimension_valid
+            and result_valid
+            and environment_valid
+            and response_medium_valid
+        ):
+            records.append(EvidenceRecord(dimension, result, environment))
+
+    if has_substantive_evidence:
+        for label in SUBSTANTIVE_PHRASE_FIELDS:
+            value = field_value(phrase_fields, label)
+            if is_placeholder(value):
+                errors.append(
+                    f"phrase-bank.md:{phrase_id}: substantive evidence cannot use unresolved "
+                    f"phrase field '{label}' value '{value}'"
+                )
 
     missing_dimensions = [dimension for dimension in DIMENSIONS if dimension not in seen_dimensions]
     if missing_dimensions:
         errors.append(
             f"phrase-bank.md:{phrase_id}: missing evidence dimensions: {', '.join(missing_dimensions)}"
         )
+    return tuple(records)
 
 
-def validate_phrase_bank(lines: list[str], errors: list[str]) -> tuple[int, set[str]]:
+def validate_phrase_bank(
+    lines: list[str],
+    workspace: Path,
+    target_script: str,
+    lesson_dates: set[date],
+    errors: list[str],
+) -> tuple[
+    int,
+    set[str],
+    dict[str, tuple[EvidenceRecord, ...]],
+    dict[str, tuple[str, str, str]],
+]:
     blocks = phrase_blocks(lines, errors)
+    evidence_by_phrase: dict[str, tuple[EvidenceRecord, ...]] = {}
+    phrase_identities: dict[str, tuple[str, str, str]] = {}
     for phrase_id, start, end in blocks:
         fields = parse_fields(lines, start + 1, end)
         require_fields("phrase-bank.md", fields, PHRASE_FIELDS, errors, phrase_id)
+        phrase_identities.setdefault(phrase_id, normalized_phrase_identity(fields))
 
         function_id = field_value(fields, "起步功能编号")
         if function_id and not is_placeholder(function_id) and function_id != "not_applicable":
@@ -536,9 +1095,44 @@ def validate_phrase_bank(lines: list[str], errors: list[str]) -> tuple[int, set[
                     "expected F01-F30 or not_applicable"
                 )
 
+        first_learning_value = field_value(fields, "首学日期")
+        if not is_placeholder(first_learning_value):
+            first_learning_date = parse_iso_date(first_learning_value)
+            if first_learning_date is None:
+                errors.append(
+                    f"phrase-bank.md:{phrase_id}: first learning date must use ISO YYYY-MM-DD, "
+                    f"found '{first_learning_value}'"
+                )
+            elif first_learning_date > date.today():
+                errors.append(
+                    f"phrase-bank.md:{phrase_id}: first learning date cannot be later than today, "
+                    f"found '{first_learning_value}'"
+                )
+            elif first_learning_date not in lesson_dates:
+                errors.append(
+                    f"phrase-bank.md:{phrase_id}: first learning date "
+                    f"{first_learning_date.isoformat()} has no matching progress.md lesson heading"
+                )
+
         validate_source_claims(phrase_id, fields, errors)
-        validate_evidence_table(phrase_id, lines, start + 1, end, fields, errors)
-    return len(blocks), {phrase_id for phrase_id, _, _ in blocks}
+        records = validate_evidence_table(
+            phrase_id,
+            lines,
+            start + 1,
+            end,
+            fields,
+            workspace,
+            target_script,
+            lesson_dates,
+            errors,
+        )
+        evidence_by_phrase[phrase_id] = evidence_by_phrase.get(phrase_id, ()) + records
+    return (
+        len(blocks),
+        {phrase_id for phrase_id, _, _ in blocks},
+        evidence_by_phrase,
+        phrase_identities,
+    )
 
 
 def phrase_references(value: str) -> list[str]:
@@ -609,9 +1203,451 @@ def validate_function_map(lines: list[str], phrase_ids: set[str], errors: list[s
     return len(seen)
 
 
-def validate_progress(lines: list[str], phrase_ids: set[str], errors: list[str]) -> None:
+def parse_evidence_requirements(
+    value: str,
+    line_number: int,
+    phrase_ids: set[str],
+    errors: list[str],
+) -> tuple[EvidenceRequirement, ...]:
+    if is_placeholder(value):
+        return ()
+
+    requirements: list[EvidenceRequirement] = []
+    seen_references: set[str] = set()
+    seen_evidence: set[tuple[str, str]] = set()
+    for token in (
+        part.strip()
+        for part in re.split(r"[,，;；]+", clean_value(value))
+        if part.strip()
+    ):
+        parts = tuple(part.strip() for part in token.split(":"))
+        if len(parts) != 3 or any(not part for part in parts):
+            errors.append(
+                f"progress.md: line {line_number}: invalid evidence requirement '{token}'; "
+                "expected P001:dimension:role"
+            )
+            continue
+        phrase_id, dimension, role = parts
+        valid = True
+        if not PHRASE_ID_RE.fullmatch(phrase_id):
+            errors.append(
+                f"progress.md: line {line_number}: invalid phrase reference '{phrase_id}'"
+            )
+            valid = False
+        elif phrase_id not in phrase_ids:
+            errors.append(f"progress.md: line {line_number}: unknown phrase reference {phrase_id}")
+            valid = False
+        if dimension not in DIMENSIONS:
+            errors.append(
+                f"progress.md: line {line_number}: invalid evidence requirement dimension "
+                f"'{dimension}'; expected one of: {', '.join(DIMENSIONS)}"
+            )
+            valid = False
+        if role not in MISSION_ROLES:
+            errors.append(
+                f"progress.md: line {line_number}: invalid evidence requirement role '{role}'; "
+                f"expected one of: {', '.join(MISSION_ROLES)}"
+            )
+            valid = False
+        if not valid:
+            continue
+
+        requirement = EvidenceRequirement(phrase_id, dimension, role)
+        if requirement.reference in seen_references:
+            errors.append(
+                f"progress.md: line {line_number}: duplicate evidence requirement "
+                f"{requirement.reference}"
+            )
+            continue
+        evidence_key = (phrase_id, dimension)
+        if evidence_key in seen_evidence:
+            errors.append(
+                f"progress.md: line {line_number}: evidence {phrase_id}:{dimension} cannot "
+                "use multiple roles in the same mission"
+            )
+            continue
+        seen_references.add(requirement.reference)
+        seen_evidence.add(evidence_key)
+        requirements.append(requirement)
+    return tuple(requirements)
+
+
+def evidence_for_requirement(
+    requirement: EvidenceRequirement,
+    evidence_by_phrase: dict[str, tuple[EvidenceRecord, ...]],
+) -> EvidenceRecord | None:
+    return next(
+        (
+            record
+            for record in evidence_by_phrase.get(requirement.phrase_id, ())
+            if record.dimension == requirement.dimension
+        ),
+        None,
+    )
+
+
+def validate_mission_map(
+    lines: list[str],
+    phrase_ids: set[str],
+    evidence_by_phrase: dict[str, tuple[EvidenceRecord, ...]],
+    errors: list[str],
+) -> tuple[MissionRecord, ...]:
+    table = find_table(
+        "progress.md", lines, 0, len(lines), MISSION_HEADER, errors, "travel mission map"
+    )
+    if table is None:
+        return ()
+    if not table.rows:
+        errors.append("progress.md:travel mission map: must contain at least one mission row")
+        return ()
+
+    seen: dict[str, int] = {}
+    mission_records: list[MissionRecord] = []
+    passed_states = {
+        "same_session_passed",
+        "changed_condition_passed",
+        "delayed_passed",
+        "field_checked",
+    }
+    for line_number, cells in table.rows:
+        if len(cells) != len(MISSION_HEADER):
+            errors.append(
+                f"progress.md: line {line_number}: expected {len(MISSION_HEADER)} mission columns, "
+                f"found {len(cells)}"
+            )
+            continue
+        row = dict(zip(MISSION_HEADER, cells))
+        mission_id = row["任务编号"]
+        mission_id_valid = bool(MISSION_ID_RE.fullmatch(mission_id)) and int(mission_id[1:]) > 0
+        if not mission_id_valid:
+            errors.append(
+                f"progress.md: line {line_number}: invalid mission ID '{mission_id}'; "
+                "expected M01 or higher"
+            )
+        elif mission_id in seen:
+            errors.append(
+                f"progress.md: line {line_number}: duplicate mission ID {mission_id}; "
+                f"first seen on line {seen[mission_id]}"
+            )
+        else:
+            seen[mission_id] = line_number
+
+        state = row["状态"]
+        if state not in MISSION_STATES:
+            errors.append(
+                f"progress.md: line {line_number}: invalid mission state '{state}'; "
+                f"expected one of: {', '.join(MISSION_STATES)}"
+            )
+
+        requirements = parse_evidence_requirements(
+            row["证据要求"], line_number, phrase_ids, errors
+        )
+        if state in passed_states:
+            for label in ("任务域", "胜利条件", "最近证据", "下一变化"):
+                if is_placeholder(row[label]):
+                    errors.append(
+                        f"progress.md: line {line_number}: passed mission cannot use unresolved "
+                        f"'{label}' value '{row[label]}'"
+                    )
+            roles = {requirement.role for requirement in requirements}
+            if "core" not in roles or not roles.intersection({"follow_up", "repair"}):
+                errors.append(
+                    f"progress.md: line {line_number}: passed mission requires core plus "
+                    "follow_up or repair evidence requirements"
+                )
+
+        required_result = {
+            "same_session_passed": "independent",
+            "changed_condition_passed": "flexible",
+            "delayed_passed": "retained",
+            "field_checked": "independent",
+        }.get(state)
+        if required_result is not None:
+            for requirement in requirements:
+                record = evidence_for_requirement(requirement, evidence_by_phrase)
+                if record is None or RESULT_RANK.get(record.result, -1) < RESULT_RANK[required_result]:
+                    qualifier = " or higher" if required_result != "retained" else ""
+                    errors.append(
+                        f"progress.md: line {line_number}: requirement {requirement.reference} "
+                        f"needs {required_result} evidence{qualifier}"
+                    )
+
+        if state == "field_checked" and not any(
+            requirement.dimension == "interaction"
+            and (record := evidence_for_requirement(requirement, evidence_by_phrase)) is not None
+            and RESULT_RANK.get(record.result, -1) >= RESULT_RANK["independent"]
+            and record.environment in {"real_person", "real_world_task"}
+            for requirement in requirements
+        ):
+            errors.append(
+                f"progress.md: line {line_number}: mission {mission_id} state field_checked "
+                "requires an independent interaction requirement from real_person or real_world_task"
+            )
+
+        if mission_id_valid and state in MISSION_STATES:
+            mission_records.append(
+                MissionRecord(mission_id, row["任务域"], state, requirements)
+            )
+    return tuple(mission_records)
+
+
+def validate_a2_style_screen(
+    lines: list[str],
+    missions: tuple[MissionRecord, ...],
+    evidence_by_phrase: dict[str, tuple[EvidenceRecord, ...]],
+    phrase_identities: dict[str, tuple[str, str, str]],
+    profile_values: dict[str, str],
+    errors: list[str],
+) -> None:
+    table = find_table(
+        "progress.md", lines, 0, len(lines), A2_SCREEN_HEADER, errors, "A2-style screen"
+    )
+    if table is None:
+        return
+    if len(table.rows) != 1 or table.rows[0][1][0] != "A2S01":
+        errors.append("progress.md:A2-style screen: expected exactly one A2S01 screen row")
+        return
+
+    line_number, cells = table.rows[0]
+    if len(cells) != len(A2_SCREEN_HEADER):
+        errors.append(
+            f"progress.md: line {line_number}: expected {len(A2_SCREEN_HEADER)} A2-style "
+            f"screen columns, found {len(cells)}"
+        )
+        return
+    row = dict(zip(A2_SCREEN_HEADER, cells))
+    state = row["状态"]
+    if state not in A2_SCREEN_STATES:
+        errors.append(
+            f"progress.md: line {line_number}: invalid A2-style screen state '{state}'; "
+            f"expected one of: {', '.join(A2_SCREEN_STATES)}"
+        )
+        return
+    if state == "not_ready":
+        for label in ("达标任务域", "能力覆盖", "现实检查"):
+            if not is_placeholder(row[label]):
+                errors.append(
+                    f"progress.md: line {line_number}: A2-style not_ready screen requires "
+                    f"placeholder '{label}', found '{row[label]}'"
+                )
+        if row["结论"] != A2_NOT_READY_CONCLUSION:
+            errors.append(
+                f"progress.md: line {line_number}: A2-style not_ready conclusion must exactly "
+                f"be '{A2_NOT_READY_CONCLUSION}'"
+            )
+        return
+
+    for label in ("目标语言", "语言变体／地区", "可观察的目标", "优先情境"):
+        value = profile_values.get(label, "")
+        if is_placeholder(value):
+            errors.append(
+                "progress.md:A2-style screen: A2-style ready state requires substantive "
+                f"profile field '{label}'"
+            )
+
+    for label in ("达标任务域", "能力覆盖", "现实检查", "结论"):
+        if is_placeholder(row[label]):
+            errors.append(
+                f"progress.md: line {line_number}: A2-style ready screen cannot use "
+                f"unresolved '{label}' value '{row[label]}'"
+            )
+    if row["结论"] != A2_READY_CONCLUSION:
+        errors.append(
+            f"progress.md: line {line_number}: A2-style ready conclusion must exactly be "
+            f"'{A2_READY_CONCLUSION}'"
+        )
+
+    qualifying = tuple(
+        mission
+        for mission in missions
+        if mission.state in {"delayed_passed", "field_checked"}
+        and mission.domain in TRAVEL_DOMAINS
+    )
+    domains = {mission.domain for mission in qualifying}
+    if len(domains) < 5:
+        errors.append(
+            "progress.md:A2-style screen: A2-style ready state requires at least 5 unique "
+            "qualifying travel domains"
+        )
+    if "communication_repair" not in domains:
+        errors.append(
+            "progress.md:A2-style screen: A2-style ready state requires qualifying "
+            "communication_repair domain"
+        )
+    elif not any(
+        requirement.role == "repair"
+        for mission in qualifying
+        if mission.domain == "communication_repair"
+        for requirement in mission.requirements
+    ):
+        errors.append(
+            "progress.md:A2-style screen: qualifying communication_repair mission requires "
+            "a repair evidence requirement"
+        )
+    if not any(mission.state == "field_checked" for mission in qualifying):
+        errors.append(
+            "progress.md:A2-style screen: A2-style ready state requires at least one "
+            "field_checked mission"
+        )
+
+    def summary_items(label: str) -> tuple[str, ...]:
+        value = row[label]
+        if is_placeholder(value):
+            return ()
+        items = tuple(
+            item.strip()
+            for item in re.split(r"[,，;；]+", clean_value(value))
+            if item.strip()
+        )
+        duplicates = sorted({item for item in items if items.count(item) > 1})
+        if duplicates:
+            errors.append(
+                f"progress.md: line {line_number}: A2-style summary '{label}' contains "
+                f"duplicate items: {', '.join(duplicates)}"
+            )
+        return items
+
+    summary_domains = summary_items("达标任务域")
+    valid_summary_domains: set[str] = set()
+    for domain in summary_domains:
+        if domain not in TRAVEL_DOMAINS:
+            errors.append(
+                f"progress.md: line {line_number}: invalid A2-style summary travel domain "
+                f"'{domain}'"
+            )
+        elif domain not in domains:
+            errors.append(
+                f"progress.md: line {line_number}: A2-style summary travel domain '{domain}' "
+                "is not qualifying"
+            )
+        else:
+            valid_summary_domains.add(domain)
+    if len(valid_summary_domains) < 5:
+        errors.append(
+            "progress.md:A2-style screen: A2-style summary requires at least 5 unique "
+            "qualifying travel domains"
+        )
+    if "communication_repair" not in valid_summary_domains:
+        errors.append(
+            "progress.md:A2-style screen: A2-style summary requires communication_repair domain"
+        )
+
+    core_phrase_identities_by_domain: dict[str, set[tuple[str, str, str]]] = {}
+    for mission in qualifying:
+        core_phrase_identities_by_domain.setdefault(mission.domain, set()).update(
+            phrase_identities[requirement.phrase_id]
+            for requirement in mission.requirements
+            if requirement.role == "core"
+            and requirement.phrase_id in phrase_identities
+        )
+    matched_core_phrase_identities: dict[tuple[str, str, str], str] = {}
+
+    def assign_distinct_core(
+        domain: str, visited: set[tuple[str, str, str]]
+    ) -> bool:
+        for identity in core_phrase_identities_by_domain.get(domain, set()):
+            if identity in visited:
+                continue
+            visited.add(identity)
+            current_domain = matched_core_phrase_identities.get(identity)
+            if current_domain is None:
+                matched_core_phrase_identities[identity] = domain
+                return True
+            if assign_distinct_core(current_domain, visited):
+                matched_core_phrase_identities[identity] = domain
+                return True
+        return False
+
+    distinct_core_assignments = sum(
+        assign_distinct_core(domain, set())
+        for domain in core_phrase_identities_by_domain
+    )
+    if distinct_core_assignments < 5:
+        errors.append(
+            "progress.md:A2-style screen: A2-style ready state requires at least 5 "
+            "qualifying travel domains with distinct core phrase identities"
+        )
+
+    retained_dimensions: set[str] = set()
+    for mission in qualifying:
+        for requirement in mission.requirements:
+            record = evidence_for_requirement(requirement, evidence_by_phrase)
+            if record is not None and record.result == "retained":
+                retained_dimensions.add(requirement.dimension)
+    missing_dimensions = [
+        dimension for dimension in DIMENSIONS if dimension not in retained_dimensions
+    ]
+    if missing_dimensions:
+        errors.append(
+            "progress.md:A2-style screen: A2-style ready state missing retained exact "
+            f"requirements for: {', '.join(missing_dimensions)}"
+        )
+
+    summary_dimensions = summary_items("能力覆盖")
+    valid_summary_dimensions: set[str] = set()
+    for dimension in summary_dimensions:
+        if dimension not in DIMENSIONS:
+            errors.append(
+                f"progress.md: line {line_number}: invalid A2-style summary ability "
+                f"dimension '{dimension}'"
+            )
+        elif dimension not in retained_dimensions:
+            errors.append(
+                f"progress.md: line {line_number}: A2-style summary ability dimension "
+                f"'{dimension}' has no retained exact requirement"
+            )
+        else:
+            valid_summary_dimensions.add(dimension)
+    missing_summary_dimensions = [
+        dimension for dimension in DIMENSIONS if dimension not in valid_summary_dimensions
+    ]
+    if missing_summary_dimensions:
+        errors.append(
+            "progress.md:A2-style screen: A2-style summary missing retained ability "
+            f"dimensions: {', '.join(missing_summary_dimensions)}"
+        )
+
+    missions_by_id = {mission.mission_id: mission for mission in missions}
+    valid_field_checks: set[str] = set()
+    for mission_id in summary_items("现实检查"):
+        if not MISSION_ID_RE.fullmatch(mission_id) or mission_id not in missions_by_id:
+            errors.append(
+                f"progress.md: line {line_number}: unknown A2-style summary mission "
+                f"reference '{mission_id}'"
+            )
+        elif missions_by_id[mission_id].state != "field_checked":
+            errors.append(
+                f"progress.md: line {line_number}: A2-style summary mission {mission_id} "
+                "is not field_checked"
+            )
+        else:
+            valid_field_checks.add(mission_id)
+    if not valid_field_checks:
+        errors.append(
+            "progress.md:A2-style screen: A2-style summary requires at least one valid "
+            "field_checked mission reference"
+        )
+
+
+def validate_progress(
+    lines: list[str],
+    phrase_ids: set[str],
+    evidence_by_phrase: dict[str, tuple[EvidenceRecord, ...]],
+    phrase_identities: dict[str, tuple[str, str, str]],
+    profile_values: dict[str, str],
+    errors: list[str],
+) -> None:
     fields = parse_fields(lines)
     require_fields("progress.md", fields, PROGRESS_FIELDS, errors)
+    missions = validate_mission_map(lines, phrase_ids, evidence_by_phrase, errors)
+    validate_a2_style_screen(
+        lines,
+        missions,
+        evidence_by_phrase,
+        phrase_identities,
+        profile_values,
+        errors,
+    )
     table = find_table(
         "progress.md", lines, 0, len(lines), RETEST_HEADER, errors, "retest queue"
     )
@@ -655,6 +1691,11 @@ def validate(workspace: Path) -> ValidationReport:
 
     report = ValidationReport()
     phrase_ids: set[str] = set()
+    evidence_by_phrase: dict[str, tuple[EvidenceRecord, ...]] = {}
+    phrase_identities: dict[str, tuple[str, str, str]] = {}
+    target_script = ""
+    profile_values: dict[str, str] = {}
+    lesson_dates: set[date] = set()
     documents: dict[str, list[str]] = {}
     for filename in REQUIRED_FILES:
         path = workspace / filename
@@ -670,13 +1711,33 @@ def validate(workspace: Path) -> ValidationReport:
             report.errors.append(f"{filename}: cannot read UTF-8 Markdown: {exc}")
 
     if "profile.md" in documents:
-        validate_profile(documents["profile.md"], report.errors)
-    if "phrase-bank.md" in documents:
-        report.phrase_count, phrase_ids = validate_phrase_bank(
-            documents["phrase-bank.md"], report.errors
+        target_script, profile_values = validate_profile(
+            documents["profile.md"], report.errors
         )
     if "progress.md" in documents:
-        validate_progress(documents["progress.md"], phrase_ids, report.errors)
+        lesson_dates = validate_lesson_dates(documents["progress.md"], report.errors)
+    if "phrase-bank.md" in documents:
+        (
+            report.phrase_count,
+            phrase_ids,
+            evidence_by_phrase,
+            phrase_identities,
+        ) = validate_phrase_bank(
+            documents["phrase-bank.md"],
+            workspace,
+            target_script,
+            lesson_dates,
+            report.errors,
+        )
+    if "progress.md" in documents:
+        validate_progress(
+            documents["progress.md"],
+            phrase_ids,
+            evidence_by_phrase,
+            phrase_identities,
+            profile_values,
+            report.errors,
+        )
     if "function-map.md" in documents:
         report.function_count = validate_function_map(
             documents["function-map.md"], phrase_ids, report.errors

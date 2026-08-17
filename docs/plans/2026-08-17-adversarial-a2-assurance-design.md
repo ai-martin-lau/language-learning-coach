@@ -49,8 +49,12 @@ The validator will enforce the following minimum logic:
 - `self_report` cannot raise any ability above `new`;
 - spoken production and pronunciation require `audio` for a result above `new`;
 - writing above `new` requires `target_text`; romanization may be recorded as a scaffold but not writing ability;
+- `target_text` must contain characters from the target script declared in the profile, so Korean romanization cannot be relabelled as Hangul writing;
 - an untested `new` row uses `not_applicable`; a failed observed attempt may remain `new` with its actual medium and a substantive performance note;
 - text interaction may support an AI-simulation interaction result, but it does not support spoken production, pronunciation, or real-person interaction.
+- substantive performance records use a response-medium-specific prefix: `response:`, `action:`, `self_report:`, `file:`, or `attachment:`. This removes the need to guess from arbitrary prose whether the learner answered.
+- a local `file:` reference must stay within the workspace when relative, exist, and pass the bundled PCM WAV validator; an external `attachment:` remains explicitly outside independent file validation;
+- every substantive evidence date must match an ISO lesson heading in `progress.md`.
 
 The user never has to fill this field. The coach records it from the actual response.
 
@@ -66,7 +70,7 @@ TTS remains a labelled rehearsal fallback. A workspace may use it for listening 
 
 ## Travel mission map
 
-Add a compact `旅行任务地图` table to `progress.md`. It tracks user-selected missions rather than pretending that one universal phrase list is A2. Each mission has a stable `M01`-style ID, task domain, observable victory condition, linked phrase IDs, and one of these states:
+Add a compact `旅行任务地图` table to `progress.md`. It tracks user-selected missions rather than pretending that one universal phrase list is A2. Each mission has a stable `M01`-style ID, task domain, observable victory condition, exact evidence requirements, and one of these states. Each requirement uses `phrase:dimension:role`, where the role is `core`, `follow_up`, or `repair`:
 
 - `planned`
 - `training`
@@ -78,12 +82,12 @@ Add a compact `旅行任务地图` table to `progress.md`. It tracks user-select
 
 The default template exposes the high-value domains: transport, lodging, eating, shopping, directions/local geography, communication repair, and basic help. The coach selects only the learner's relevant missions.
 
-State advancement is evidence-bound:
+State advancement is evidence-bound. A passed mission must include a core requirement plus a follow-up or repair requirement, the same phrase-and-dimension cell cannot fill two roles, and every exact requirement must meet the state threshold:
 
 - `same_session_passed` requires an observable independent success;
 - `changed_condition_passed` requires a `flexible` result under a meaningful changed condition;
 - `delayed_passed` requires a later `retained` result without the answer visible;
-- `field_checked` requires successful `real_person` or `real_world_task` interaction evidence;
+- `field_checked` requires every requirement at independent or higher plus successful no-answer `real_person` or `real_world_task` interaction evidence;
 - no mission state, by itself, is an official CEFR level.
 
 ## A2 claim ladder
@@ -91,7 +95,7 @@ State advancement is evidence-bound:
 Use three distinct public conclusions:
 
 1. **Task result:** “You completed this task in the current lesson / under a changed condition / after a delay.”
-2. **Internal travel screen:** “Your evidence is consistent with A2-style performance in the tested travel tasks.” This requires multiple unseen tasks across listening, spoken interaction/production, reading, and practical text, sampled across common travel domains and more than one session. Weak or missing dimensions must be named.
+2. **Internal travel screen:** “Your evidence is consistent with A2-style performance in the tested travel tasks.” The machine-checkable minimum is five of the seven canonical travel domains at delayed or field-checked state, five distinct core phrase IDs, communication repair with a repair role, retained evidence for all six tracked dimensions through exact mission requirements, and at least one field-checked mission. The summary must match the underlying domains, dimensions, and field-checked mission IDs. Weak or missing dimensions must still be named.
 3. **Official level:** only an appropriate external assessment can establish a formal CEFR result.
 
 The Skill must not equate selected-mission success with “travel without problems.” Council of Europe descriptors place simple, predictable exchanges at A2 and most travel situations at B1.

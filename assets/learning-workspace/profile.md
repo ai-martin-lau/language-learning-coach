@@ -28,6 +28,7 @@
 
 - 声音特征：待填写
 - 文字系统与转写：待填写
+- 目标文字脚本：待填写（latin／hangul／japanese／arabic／cyrillic／greek／hebrew／devanagari／thai／han／other／not_applicable）
 - 语法与词形：待填写
 - 语域、方言或双言现象：待填写
 

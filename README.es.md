@@ -18,9 +18,9 @@ Está pensada ante todo para aprender idiomas con fines de viaje, como el franc�
 
 ## Aprende para el viaje, no para mantener una racha
 
-![Seis áreas de práctica para viajar: transporte, alojamiento, comida, orientación, compras y reparación de la comunicación](assets/readme/travel-scenarios.svg)
+![Seis áreas centrales de práctica para viajar: transporte, alojamiento, comida, orientación, compras y reparación de la comunicación](assets/readme/travel-scenarios.svg)
 
-La ruta de viaje predeterminada se concentra en seis resultados:
+La ruta de viaje predeterminada sigue siete resultados. La imagen muestra seis ámbitos cotidianos de interacción; el séptimo es una petición de ayuda básica con límites de seguridad:
 
 - **Transporte:** preguntar por billetes, andenes, horarios, trayectos y cambios.
 - **Alojamiento:** hacer el registro de entrada, confirmar datos y explicar un problema sencillo.
@@ -28,6 +28,7 @@ La ruta de viaje predeterminada se concentra en seis resultados:
 - **Orientación:** preguntar cómo llegar, identificar puntos de referencia y confirmar que has entendido.
 - **Compras:** preguntar por precios, cantidades, tallas y disponibilidad, y efectuar el pago.
 - **Reparación de la comunicación:** pedir que repitan, hablen más despacio, lo escriban, lo señalen o lo expresen de otra manera.
+- **Ayuda básica:** resolver una consulta en una farmacia, objetos perdidos u otra petición no urgente sin tratar emergencias graves como tareas A2.
 
 Cada expresión activa se guarda con tu propia versión, un elemento sustituible, una pregunta de seguimiento probable y una fórmula para reparar la comunicación. El objetivo no es memorizar un libro de frases rígido, sino completar la tarea cuando cambia un dato.
 
@@ -100,7 +101,9 @@ La escala de evidencia es:
 con apoyo → realización independiente → cambio de condición → retención diferida
 ```
 
-El espacio de trabajo registra la tarea, el nivel de ayuda, el entorno de la evidencia, el resultado, la fecha y la próxima reevaluación. Las comprobaciones con personas reales o en situaciones reales pueden reforzar la evidencia, pero el proyecto nunca concede un certificado A2. La velocidad de avance depende del idioma, el punto de partida, el tiempo de práctica, la calidad de los recursos y de que el desempeño se mantenga al transferirlo y evaluarlo más adelante.
+El espacio de trabajo registra la tarea, el nivel de ayuda, el entorno de la evidencia, el **medio de respuesta**, el resultado, la fecha y la próxima reevaluación. Así, una romanización escrita, un «ya lo dije» que el coach no pudo observar o una tarea aún pendiente de respuesta no se guardan por error como habla audible o escritura en el sistema normal del idioma. Una misión de viaje solo avanza a logro en la misma sesión, cambio de condición, retención diferida o comprobación real cuando existe evidencia compatible.
+
+Completar una misión no equivale a alcanzar A2. La evaluación interna de tipo A2 solo se supera cuando al menos cinco de los siete ámbitos de viaje definidos alcanzan una comprobación diferida o real con expresiones centrales distintas, se incluye la reparación de la comunicación, las seis capacidades tienen evidencia retenida vinculada a requisitos exactos de misión y al menos una misión se supera con una persona o tarea real. Incluso entonces, el coach solo puede decir que la evidencia concuerda con un desempeño de tipo A2 **en las tareas evaluadas** y señalar todas las carencias. Esto no es un resultado del CEFR; solo una evaluación externa adecuada puede establecerlo. La velocidad de avance depende del idioma, el punto de partida, el tiempo de práctica, la calidad de los recursos y de que el desempeño resista la transferencia y el paso del tiempo.
 
 ## Las fuentes de audio nunca se ocultan
 
@@ -112,6 +115,8 @@ Para objetivos orales, cuando hay audio reproducible, se escucha la frase nueva 
 | `native_traceable` | Grabación de un hablante nativo cuya procedencia puede verificarse y cuya variedad, contexto y registro son adecuados | Un modelo dentro del alcance documentado de la fuente |
 | `tts` | Voz sintética de respaldo, siempre identificada como tal | Comprensión inicial y ensayo; no acredita un modelo nativo ni el dominio de la pronunciación |
 | `pending` | Todavía no se ha proporcionado un modelo fiable | El paso oral o de pronunciación se detiene en vez de inventarse |
+
+Cuando se usa TTS, el espacio de trabajo registra por separado la comprobación de la expresión y el registro, la variedad objetivo, el motor o la voz, el archivo o reproductor entregado y la validación técnica. Que una onda de audio se reproduzca no demuestra que la formulación sea natural.
 
 Los archivos WAV locales se validan estructuralmente antes de entregarse. La validez técnica nunca sustituye la fiabilidad de la fuente, la variedad correcta, la reproducción efectiva ni una evaluación de la pronunciación.
 
@@ -164,7 +169,7 @@ language-learning/<language-slug>/
 ├── profile.md
 ├── phrase-bank.md
 ├── function-map.md
-└── progress.md
+└── progress.md       # misiones de viaje, reevaluaciones y evidencia de clase
 ```
 
 Estos archivos Markdown legibles guardan objetivos y restricciones pertinentes para el curso, anclas de hábito, expresiones contextualizadas, clases de fuente de audio, evidencia por destreza, cobertura de funciones iniciales, correcciones y reevaluaciones programadas. Permanecen en el espacio de trabajo del usuario, no en el directorio donde está instalada la Skill. Un validador incluido comprueba la estructura y la coherencia interna sin afirmar que el resultado de aprendizaje registrado sea verdadero.
