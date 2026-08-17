@@ -2,7 +2,7 @@
 
 # Language Learning Coach
 
-**Build verifiable A2 foundations for your next trip—through the shortest practical route your performance supports.**
+**Start with one real travel task. Build verifiable A2 foundations through the shortest practical route your performance supports.**
 
 ![An illustrated journey through a train station, hotel, and restaurant](assets/readme/travel-hero.webp)
 
@@ -15,6 +15,12 @@ It is designed first for travel languages such as French, German, Italian, Spani
 
 > [!NOTE]
 > This is an independent open-source project inspired by Kazuma's publicly shared learning practices. It is not official, authorized, affiliated with, or endorsed by Kazuma.
+
+## Fast start, not a shortcut
+
+The coach shortens the distance between “I want to learn” and actually handling a ticket, check-in, order, direction, or communication breakdown. The first lesson selects one likely travel task, teaches only the one to three complete phrases needed for it, and asks you to use them immediately.
+
+It does not skip reliable input, changed-condition practice, or delayed retests. “Fast” means removing vocabulary lists, grammar sequences, generic calendars, and material unrelated to your next trip—not promising instant A2, a fixed completion time, or lower standards.
 
 ## Learn for the trip, not for the streak
 

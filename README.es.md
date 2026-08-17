@@ -2,7 +2,7 @@
 
 # Language Learning Coach
 
-**Construye una base verificable de nivel A2 para tu próximo viaje, siguiendo la ruta práctica más corta que permita tu desempeño real.**
+**Empieza con una tarea de viaje real y construye una base verificable de nivel A2 por la ruta práctica más corta que permita tu desempeño.**
 
 ![Un viaje ilustrado por una estación de tren, un hotel y un restaurante](assets/readme/travel-hero.webp)
 
@@ -15,6 +15,12 @@ Está pensada ante todo para aprender idiomas con fines de viaje, como el franc�
 
 > [!NOTE]
 > Este es un proyecto independiente de código abierto inspirado en las prácticas de aprendizaje que Kazuma ha compartido públicamente. No es un proyecto oficial de Kazuma, no está afiliado a él ni cuenta con su autorización o respaldo.
+
+## Empezar rápido no significa aprender por atajos
+
+El coach acorta la distancia entre «quiero aprender» y comprar un billete, registrarte en un hotel, pedir comida, preguntar cómo llegar o reparar una conversación. La primera lección elige una tarea probable del próximo viaje, enseña únicamente entre una y tres expresiones completas necesarias para resolverla y te pide que las uses de inmediato.
+
+No se omiten las fuentes fiables, la práctica con condiciones distintas ni las reevaluaciones posteriores. «Rápido» significa eliminar listas de vocabulario, secuencias gramaticales, calendarios genéricos y materiales ajenos al próximo viaje; no prometer un A2 instantáneo, un plazo fijo ni criterios menos exigentes.
 
 ## Aprende para el viaje, no para mantener una racha
 

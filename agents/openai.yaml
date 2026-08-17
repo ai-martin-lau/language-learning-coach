@@ -1,4 +1,4 @@
 interface:
   display_name: "小语种旅行 A2 教练"
-  short_description: "以 A2 常见任务为参照，训练可验证的旅行基础沟通能力"
-  default_prompt: "使用 $language-learning-coach 帮我学习一门旅行语言，从常见场景开始训练 A2 基础沟通能力。"
+  short_description: "从第一轮真实任务开始，建立可验证的旅行 A2 基础沟通能力"
+  default_prompt: "使用 $language-learning-coach 帮我学习一门旅行语言，从下一次旅行最可能遇到的一个真实任务开始。"
