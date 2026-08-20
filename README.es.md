@@ -2,49 +2,39 @@
 
 # Language Learning Coach
 
-**Empieza con una tarea de viaje real y construye una base verificable de nivel A2 por la ruta práctica más corta que permita tu desempeño.**
-
-![Un viaje ilustrado por una estación de tren, un hotel y un restaurante](assets/readme/travel-hero.webp)
+**Empieza desde cero, prepara primero un entorno de voz gratuito y construye una base A2 verificable desde un objetivo real por la ruta práctica más corta que permita tu desempeño.**
 
 Language Learning Coach es una Skill adaptativa de Codex para aprender idiomas modernos que cuentan con recursos fiables y abundantes, mediante tareas reales, expresiones útiles, recuperación activa, interacción, correcciones específicas y reevaluaciones posteriores.
 
-Está pensada ante todo para aprender idiomas con fines de viaje, como el francés, el alemán, el italiano, el español, el portugués, el coreano, el japonés, el árabe y el inglés. El idioma, la variedad regional, el sistema de escritura, el tiempo disponible y lo que realmente seas capaz de hacer determinan cómo será la lección.
+Admite idiomas modernos con buenos recursos, como francés, alemán, italiano, español, portugués, coreano, japonés, árabe e inglés. La vida diaria, los viajes, el trabajo, el estudio, los exámenes, la lectura, la escritura, los medios, la lengua de herencia y los intereses personales son rutas válidas. El idioma, la variedad, la escritura, el objetivo, el tiempo y tu desempeño determinan la lección.
 
 > [!IMPORTANT]
-> «A2 para viajar» es la ruta de aprendizaje de este proyecto, no un subnivel oficial del CEFR ni un certificado. A2 abarca intercambios sencillos y directos en situaciones conocidas y rutinarias; el CEFR sitúa en B1 la capacidad de afrontar la mayoría de las situaciones que pueden surgir durante un viaje. Por eso, el objetivo del coach es que puedas **desenvolverte con más seguridad en tareas de viaje habituales y previsibles**, no prometer que podrás afrontar sin dificultad cualquier viaje o emergencia. Consulta la [escala global](https://www.coe.int/en/web/common-european-framework-reference-languages/table-1-cefr-3.3-common-reference-levels-global-scale) y los [descriptores de expresión oral](https://www.coe.int/en/web/common-european-framework-reference-languages/table-3-cefr-3.3-common-reference-levels-qualitative-aspects-of-spoken-language-use) del Consejo de Europa.
+> La evaluación interna de tipo A2 no es un subnivel oficial del CEFR ni un certificado. A2 abarca intercambios sencillos y directos en situaciones conocidas y rutinarias. Viajar es una ruta opcional; como el CEFR sitúa en B1 la capacidad de afrontar la mayoría de las situaciones de viaje, esta Skill no promete resolver sin dificultad cualquier viaje o emergencia. Consulta la [escala global](https://www.coe.int/en/web/common-european-framework-reference-languages/table-1-cefr-3.3-common-reference-levels-global-scale) y los [descriptores de expresión oral](https://www.coe.int/en/web/common-european-framework-reference-languages/table-3-cefr-3.3-common-reference-levels-qualitative-aspects-of-spoken-language-use) del Consejo de Europa.
 
 > [!NOTE]
 > Este es un proyecto independiente de código abierto inspirado en las prácticas de aprendizaje que Kazuma ha compartido públicamente. No es un proyecto oficial de Kazuma, no está afiliado a él ni cuenta con su autorización o respaldo.
 
 ## Empezar rápido no significa aprender por atajos
 
-El coach acorta la distancia entre «quiero aprender» y comprar un billete, registrarte en un hotel, pedir comida, preguntar cómo llegar o reparar una conversación. La primera lección elige una tarea probable del próximo viaje, enseña únicamente entre una y tres expresiones completas necesarias para resolverla y te pide que las uses de inmediato.
+El coach acorta la distancia entre «quiero aprender» y completar una tarea útil. Cuando conoce el idioma, comprueba primero el entorno de voz gratuito, pregunta por tu objetivo sin presuponer un viaje y enseña solo lo necesario para la primera tarea.
 
-No se omiten las fuentes fiables, la práctica con condiciones distintas ni las reevaluaciones posteriores. «Rápido» significa eliminar listas de vocabulario, secuencias gramaticales, calendarios genéricos y materiales ajenos al próximo viaje; no prometer un A2 instantáneo, un plazo fijo ni criterios menos exigentes.
+No se omiten las fuentes fiables, la práctica con condiciones distintas ni las reevaluaciones posteriores. «Rápido» significa eliminar listas, secuencias, calendarios y materiales ajenos al objetivo actual; no prometer un A2 instantáneo, un plazo fijo ni criterios menos exigentes.
 
-## Aprende para el viaje, no para mantener una racha
+## Tareas A2 comunes; viajar es opcional
 
 ![Seis áreas centrales de práctica para viajar: transporte, alojamiento, comida, orientación, compras y reparación de la comunicación](assets/readme/travel-scenarios.svg)
 
-La ruta de viaje predeterminada sigue siete resultados. La imagen muestra seis ámbitos cotidianos de interacción; el séptimo es una petición de ayuda básica con límites de seguridad:
+El mapa interno usa siete ámbitos A2 comunes: información personal; rutinas y entorno inmediato; necesidades y transacciones; tiempo, lugar y direcciones; preferencias e intercambio social; reparación de la comunicación; textos breves y escritura. Tus objetivos pueden añadir tareas propias, pero la evaluación interna conservadora solo cuenta estos ámbitos compartidos.
 
-- **Transporte:** preguntar por billetes, andenes, horarios, trayectos y cambios.
-- **Alojamiento:** hacer el registro de entrada, confirmar datos y explicar un problema sencillo.
-- **Comida:** pedir, expresar preferencias, entender una pregunta habitual y pagar.
-- **Orientación:** preguntar cómo llegar, identificar puntos de referencia y confirmar que has entendido.
-- **Compras:** preguntar por precios, cantidades, tallas y disponibilidad, y efectuar el pago.
-- **Reparación de la comunicación:** pedir que repitan, hablen más despacio, lo escriban, lo señalen o lo expresen de otra manera.
-- **Ayuda básica:** resolver una consulta en una farmacia, objetos perdidos u otra petición no urgente sin tratar emergencias graves como tareas A2.
+La imagen de transporte, alojamiento, comida, orientación, compras y reparación corresponde a una ruta opcional cuando eliges viajar. Las emergencias médicas, legales, migratorias o de seguridad graves no se presentan como situaciones que A2 permita afrontar de forma autónoma y segura.
 
 Cada expresión activa se guarda con tu propia versión, un elemento sustituible, una pregunta de seguimiento probable y una fórmula para reparar la comunicación. El objetivo no es memorizar un libro de frases rígido, sino completar la tarea cuando cambia un dato.
-
-Las emergencias médicas, legales, migratorias o de seguridad graves no se presentan como situaciones que el nivel A2 permita afrontar de forma autónoma y segura.
 
 ## Empieza con una sola frase
 
 ```text
-Usa $language-learning-coach. Empiezo japonés desde cero, tengo 15 minutos
-al día y quiero mantener conversaciones básicas durante un viaje a Japón.
+Usa $language-learning-coach. Empiezo coreano desde cero. Prepara primero un
+entorno de voz gratuito y ayúdame después a elegir un primer objetivo útil.
 ```
 
 Si todavía no has indicado un idioma, la primera respuesta contiene únicamente:
@@ -53,7 +43,7 @@ Si todavía no has indicado un idioma, la primera respuesta contiene únicamente
 ¿Qué idioma quieres aprender?
 ```
 
-A partir de ahí, el coach hace una sola pregunta cada vez, y únicamente cuando la respuesta vaya a cambiar la siguiente lección. Empiezas con una tarea pequeña en lugar de recibir un cuestionario largo o un calendario genérico.
+Cuando conoce el idioma, el coach comprueba el entorno de voz gratuito y pregunta de forma neutral: «¿Qué quieres poder hacer primero en coreano?». No presupone que vayas a Corea y solo hace una pregunta cada vez.
 
 También puedes empezar así:
 
@@ -69,9 +59,9 @@ Hoy solo tengo cinco minutos.
 
 ## La ruta útil más corta se adapta a ti
 
-![Un ciclo de ocho etapas que va de una tarea real de viaje a material fiable, recuperación, interacción, correcciones y transferencia diferida](assets/readme/adaptive-loop.svg)
+![Un ciclo de ocho etapas que va de una tarea real a material fiable, recuperación, interacción, correcciones y transferencia diferida](assets/readme/adaptive-loop.svg)
 
-Si tu objetivo de viaje incluye comprensión y expresión oral, una lección típica recorre estos pasos:
+Si tu objetivo incluye comprensión y expresión oral, una lección típica recorre estos pasos:
 
 1. elegir una tarea real y la variedad lingüística objetivo;
 2. escuchar un modelo completo y clasificado antes de ver la respuesta;
@@ -86,14 +76,14 @@ Cada vez que retomas el aprendizaje, el coach empieza por mostrar una única tar
 
 También puedes optar por una acción de microinmersión de unos 30 segundos vinculada a algo que ya haces, como abrir un mapa o consultar una reserva. No añade automáticamente contenido nuevo. Informar de que la has completado solo deja constancia de la práctica; no mejora el nivel de evidencia de ninguna destreza.
 
-El orden cambia para objetivos exclusivamente de lectura o escritura, necesidades de accesibilidad, sistemas de escritura nuevos, contrastes de tono o acento tonal, flexión compleja, honoríficos, variedades regionales o situaciones de diglosia. Viajar es la ruta principal; los objetivos de trabajo, exámenes, lectura, escritura, contenidos audiovisuales y lengua de herencia siguen estando disponibles cuando existen recursos fiables.
+El orden cambia según la lectura, la escritura, la accesibilidad, el sistema gráfico, los contrastes sonoros, la morfología, los honoríficos, las variedades o la diglosia. La vida diaria, los viajes, el trabajo, el estudio, los exámenes, la lectura, la escritura, los medios, la herencia y los intereses son rutas equivalentes cuando hay recursos fiables.
 
 ## Una microlección, cuatro pasos visibles
 
 ![Una lección en cuatro viñetas: escuchar un modelo completo, intentar la tarea, recibir una corrección específica y repetir con una condición distinta](assets/readme/lesson-storyboard.svg)
 
 1. **Modelo:** escucha la expresión completa de una fuente clasificada; el texto aparece después cuando corresponde.
-2. **Intento:** úsala en una tarea de taquilla, recepción de hotel, restaurante, tienda u orientación.
+2. **Intento:** úsala en la tarea real actual del estudiante.
 3. **Corrección específica:** mantén vivo el intercambio y corrige solo lo que más afecte a la tarea.
 4. **Nuevo intento:** completa la tarea otra vez y cambia después una condición para que el resultado dependa de la recuperación, no de copiar.
 
@@ -111,11 +101,19 @@ La escala de evidencia es:
 con apoyo → realización independiente → cambio de condición → retención diferida
 ```
 
-El espacio de trabajo registra la tarea, el nivel de ayuda, el entorno de la evidencia, el **medio de respuesta**, el resultado, la fecha y la próxima reevaluación. Así, una romanización escrita, un «ya lo dije» que el coach no pudo observar o una tarea aún pendiente de respuesta no se guardan por error como habla audible o escritura en el sistema normal del idioma. Una misión de viaje solo avanza a logro en la misma sesión, cambio de condición, retención diferida o comprobación real cuando existe evidencia compatible.
+El espacio de trabajo registra la tarea, el nivel de ayuda, el entorno de la evidencia, el **medio de respuesta**, el resultado, la fecha y la próxima reevaluación. Así, una romanización, una autoafirmación no observada o una tarea pendiente no se guardan como habla audible o escritura. Una tarea A2 solo avanza cuando existe evidencia compatible.
 
-Completar una misión no equivale a alcanzar A2. La evaluación interna de tipo A2 solo se supera cuando al menos cinco de los siete ámbitos de viaje definidos alcanzan una comprobación diferida o real con expresiones centrales distintas, se incluye la reparación de la comunicación, las seis capacidades tienen evidencia retenida vinculada a requisitos exactos de misión y al menos una misión se supera con una persona o tarea real. Incluso entonces, el coach solo puede decir que la evidencia concuerda con un desempeño de tipo A2 **en las tareas evaluadas** y señalar todas las carencias. Esto no es un resultado del CEFR; solo una evaluación externa adecuada puede establecerlo. La velocidad de avance depende del idioma, el punto de partida, el tiempo de práctica, la calidad de los recursos y de que el desempeño resista la transferencia y el paso del tiempo.
+Completar una tarea no equivale a alcanzar A2. La evaluación interna exige al menos cinco de los siete ámbitos comunes con expresiones centrales distintas y comprobación diferida o real, reparación de la comunicación, evidencia retenida exacta en las seis capacidades y al menos una comprobación con una persona o tarea real. Incluso entonces solo puede hablarse de desempeño A2 **en las tareas evaluadas**; no es un resultado oficial del CEFR.
 
 ## Las fuentes de audio nunca se ocultan
+
+Para objetivos orales, preparar el entorno de voz es el primer paso operativo:
+
+- **macOS:** usa gratis `say` y `afconvert`; si falta la voz del idioma, añade una voz gratuita desde los ajustes del sistema.
+- **Windows:** usa gratis PowerShell `System.Speech` y las voces de Windows instaladas; si falta la voz objetivo, explica la capacidad de voz que se añadirá y pide confirmación antes de instalarla.
+- **Alternativa en línea opcional:** solo si no hay voz local, pregunta antes de instalar `edge-tts` gratuito y su conversor en un entorno aislado del espacio de trabajo. Necesita internet, no es la voz del sistema de Windows y puede dejar de funcionar.
+
+No se requieren claves API, tarjeta, TTS en la nube de pago, suscripción ni instalación global de paquetes Python. La primera expresión completa se genera y valida antes de empezar la lección oral. Los objetivos solo de lectura, escritura o texto pueden omitirlo.
 
 Para objetivos orales, cuando hay audio reproducible, se escucha la frase nueva antes de ver su forma escrita. Cada modelo se clasifica así:
 
@@ -130,9 +128,11 @@ Cuando se usa TTS, el espacio de trabajo registra por separado la comprobación 
 
 Los archivos WAV locales se validan estructuralmente antes de entregarse. La validez técnica nunca sustituye la fiabilidad de la fuente, la variedad correcta, la reproducción efectiva ni una evaluación de la pronunciación.
 
+El coach no exige subir MP3 o grabaciones ni anuncia una puntuación porcentual de pronunciación. Solo cuando el anfitrión admite claramente entrada de audio y el estudiante la aporta voluntariamente puede ofrecer comentarios cualitativos limitados sobre lo que realmente oye.
+
 ## Instalación
 
-Necesitas Codex con compatibilidad para Skills locales y Python 3 para los validadores incluidos de audio y del espacio de trabajo. El validador de audio acepta archivos WAV RIFF PCM clásicos sin comprimir; convierte antes cualquier otro formato. La instalación con Git también requiere Git.
+Necesitas un anfitrión compatible con Skills locales y Python 3 para las herramientas de TTS, audio, migración y espacio de trabajo. Las lecciones orales requieren voz del sistema de macOS o Windows, o la alternativa gratuita aislada autorizada por el usuario. El validador de entrega acepta WAV RIFF PCM sin comprimir. La instalación con Git también requiere Git.
 
 ### Instalador de Skills incluido
 
@@ -185,12 +185,12 @@ language-learning/<language-slug>/
 ├── profile.md
 ├── phrase-bank.md
 ├── function-map.md
-└── progress.md       # misiones, ruta de sonido–escritura, reevaluaciones y evidencia
+└── progress.md       # tareas A2, ruta de sonido–escritura, reevaluaciones y evidencia
 ```
 
 Estos archivos Markdown legibles guardan objetivos y restricciones pertinentes para el curso, anclas de hábito, expresiones contextualizadas, clases de fuente de audio, evidencia por destreza, cobertura de funciones iniciales, cobertura de la base de sonido–escritura, observaciones de errores recurrentes, microinmersión opcional y reevaluaciones programadas. Permanecen en el espacio de trabajo del usuario, no en el directorio donde está instalada la Skill. Un validador incluido comprueba la estructura y la coherencia interna sin afirmar que el resultado de aprendizaje registrado sea verdadero.
 
-Antes de validar un espacio de trabajo antiguo sin la tabla de sonido–escritura, el migrador aditivo incluido inserta una sola tabla actual vacía y conserva las lecciones, evidencias y notas existentes; nunca infiere aprendizaje básico pasado.
+En un espacio de trabajo antiguo, el migrador aditivo cambia el título del mapa de viajes por el mapa de tareas A2 y añade la tabla vacía de sonido–escritura que falte. Conserva las filas, lecciones, evidencias y notas existentes sin reclasificar los ámbitos de viaje antiguos.
 
 El repositorio no contiene telemetría, integración de cuentas ni servicios en segundo plano. Codex y las herramientas autorizadas por el usuario pueden acceder a fuentes externas cuando una lección necesite material lingüístico fiable; siguen aplicándose las políticas de privacidad de esos productos.
 
@@ -217,7 +217,10 @@ La navegación visual de este README toma como referencia la sección de aprendi
 │   ├── language-adaptation.md       # Adaptación según las características lingüísticas
 │   └── session-protocols.md         # Lecciones, correcciones, repaso y estado
 ├── scripts/validate_audio.py        # Validador de archivos WAV PCM locales
+├── scripts/generate_tts.py          # TTS gratuito para macOS, Windows y opción en línea
+├── scripts/migrate_workspace.py     # Migración sin pérdidas de espacios antiguos
 ├── scripts/validate_workspace.py    # Validador del estado de aprendizaje en Markdown
+├── tests/test_generate_tts.py       # Pruebas de regresión TTS multiplataforma
 ├── tests/test_validate_audio.py     # Pruebas de regresión del validador de audio
 ├── tests/test_validate_workspace.py # Pruebas de regresión del validador del espacio de trabajo
 └── docs/plans/                      # Registros de diseño
@@ -225,7 +228,7 @@ La navegación visual de este README toma como referencia la sección de aprendi
 
 ## Contribuciones
 
-Los issues y pull requests son bienvenidos, en especial las correcciones respaldadas por fuentes, una mejor adaptación a las principales variedades lingüísticas y tareas de viaje, límites más claros de seguridad y evidencia, y mejoras naturales en las cinco traducciones del README.
+Los issues y pull requests son bienvenidos, en especial las correcciones respaldadas por fuentes, una mejor adaptación a las principales variedades y tareas A2 reales, límites más claros de seguridad y evidencia, y mejoras naturales en las cinco traducciones del README.
 
 Usa el `README.md` en inglés como fuente de contenido y actualiza en el mismo pull request todas las traducciones afectadas. No añadas afirmaciones de alcanzar A2 en un plazo fijo, promesas de fluidez sin respaldo, consensos inventados entre hablantes nativos, testimonios falsos ni afirmaciones de afiliación con Kazuma.
 

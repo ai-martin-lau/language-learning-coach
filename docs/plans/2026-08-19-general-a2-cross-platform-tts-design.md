@@ -18,6 +18,7 @@ The current audio contract is also incomplete. It correctly distinguishes native
 5. Provide a free-first macOS and Windows TTS path that detects the environment before acting.
 6. Never require a paid API, billing account, subscription, or per-character service.
 7. Keep all generated learner audio explicitly labelled as synthetic speech and technically validated.
+8. Do not require user-recording uploads, because major target hosts may not expose audio input to the Skill.
 
 ## Non-goals
 
@@ -27,6 +28,7 @@ The current audio contract is also incomplete. It correctly distinguishes native
 - Install system components silently or bypass administrator controls.
 - Present TTS as a native-speaker recording or pronunciation-mastery reference.
 - Build a general-purpose paid cloud TTS integration.
+- Build or advertise an MP3 pronunciation-scoring workflow.
 
 ## Approaches considered
 
@@ -147,6 +149,10 @@ Do not use a global `pip install`, silently add package repositories, disable se
 - Expression correctness, register, target variety, engine support, file playback, and WAV validation remain separate facts.
 - A valid waveform does not prove that the expression is natural or that every device can play it.
 
+## User-recording boundary
+
+The course does not ask learners to upload MP3 or other recordings and does not advertise a pronunciation percentage. This keeps the core path usable in hosts such as WorkBuddy that may not expose audio attachments to the model. If a different host explicitly supports audio input and a learner voluntarily supplies a recording, the coach may give limited qualitative feedback only on features it can actually hear. A filename, attachment placeholder, link, or transcript is never audible evidence.
+
 ## Migration and compatibility
 
 - Preserve `name: language-learning-coach`.
@@ -182,6 +188,7 @@ Expected files include:
 8. No code path requests or configures a paid API, billing account, subscription, or credit card.
 9. Optional `edge-tts` installation is isolated, explicitly online, and never presented as an official SLA-backed API.
 10. All automated tests and `git diff --check` pass.
+11. A normal beginner lesson never asks for an MP3 upload; a host without audio-input support still completes the core course path without a dead-end recording step.
 
 ## Primary references
 

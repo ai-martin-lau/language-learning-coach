@@ -303,18 +303,18 @@ class ValidateWorkspaceTests(unittest.TestCase):
         evidence_requirements,
         status,
         *,
-        victory="能独立完成交通任务并处理追问",
+        victory="能独立完成当前任务并处理追问",
         recent="精确证据要求均已核对",
         next_change="改变地点",
     ):
         domains = {
-            "M01": "transport",
-            "M02": "lodging",
-            "M03": "eating",
-            "M04": "shopping",
-            "M05": "directions_local_geography",
+            "M01": "personal_information",
+            "M02": "routines_immediate_environment",
+            "M03": "needs_transactions",
+            "M04": "time_place_directions",
+            "M05": "preferences_social_exchange",
             "M06": "communication_repair",
-            "M07": "basic_help",
+            "M07": "short_texts_writing",
         }
         domain = domains[mission_id]
         self.replace(
@@ -326,10 +326,10 @@ class ValidateWorkspaceTests(unittest.TestCase):
     def set_a2_screen(
         self,
         status,
-        domains="transport, lodging, eating, shopping, communication_repair",
+        domains="personal_information, routines_immediate_environment, needs_transactions, time_place_directions, communication_repair",
         dimensions="listening, spoken_production, reading, writing, interaction, pronunciation",
         field_check="M03",
-        conclusion="证据与已测试旅行任务中的 A2 风格表现一致；正式 CEFR 未确认",
+        conclusion="证据与已测试任务中的 A2 风格表现一致；正式 CEFR 未确认",
     ):
         self.replace(
             "progress.md",
@@ -352,6 +352,7 @@ class ValidateWorkspaceTests(unittest.TestCase):
         first_learning = today - timedelta(days=1)
         self.set_target_script("hangul")
         self.set_lesson_date(today.isoformat())
+        self.set_lesson_date(first_learning.isoformat())
         self.set_complete_native_source()
         self.replace(
             "phrase-bank.md", "- 首学日期：待填写", f"- 首学日期：{first_learning.isoformat()}"
@@ -1610,6 +1611,7 @@ class ValidateWorkspaceTests(unittest.TestCase):
         today = date.today()
         first_learning = today - timedelta(days=1)
         self.set_lesson_date(today.isoformat())
+        self.set_lesson_date(first_learning.isoformat())
         self.replace(
             "phrase-bank.md", "- 首学日期：待填写", f"- 首学日期：{first_learning.isoformat()}"
         )
@@ -1864,7 +1866,7 @@ class ValidateWorkspaceTests(unittest.TestCase):
         self.replace(
             "progress.md",
             "| A2S01 | `not_ready` | — | — | — | 只报告单项任务的实际证据阶梯 |",
-            "| A2S01 | `not_ready` | transport | listening | M01 | 正式 A2 已通过 |",
+            "| A2S01 | `not_ready` | personal_information | listening | M01 | 正式 A2 已通过 |",
         )
         report = validate_workspace.validate(self.workspace)
         for label in ("达标任务域", "能力覆盖", "现实检查"):
@@ -1897,8 +1899,16 @@ class ValidateWorkspaceTests(unittest.TestCase):
         self.assert_error_contains(report, "lesson heading must start with ISO YYYY-MM-DD")
 
     def test_mission_ids_must_be_positive_m01_style_and_unique(self):
-        self.replace("progress.md", "| M01 | transport |", "| M00 | transport |")
-        self.replace("progress.md", "| M02 | lodging |", "| M03 | lodging |")
+        self.replace(
+            "progress.md",
+            "| M01 | personal_information |",
+            "| M00 | personal_information |",
+        )
+        self.replace(
+            "progress.md",
+            "| M02 | routines_immediate_environment |",
+            "| M03 | routines_immediate_environment |",
+        )
         report = validate_workspace.validate(self.workspace)
         self.assert_error_contains(report, "invalid mission ID 'M00'")
         self.assert_error_contains(report, "duplicate mission ID M03")
@@ -1953,8 +1963,8 @@ class ValidateWorkspaceTests(unittest.TestCase):
     def test_passed_mission_rejects_unresolved_summary_cells(self):
         self.replace(
             "progress.md",
-            "| M01 | transport | 待用户选择具体任务 | — | `not_selected` | — | — |",
-            "| M01 | transport | 待用户选择具体任务 | P001:reading:core, P001:writing:follow_up | `same_session_passed` | — | — |",
+            "| M01 | personal_information | 待用户选择具体任务 | — | `not_selected` | — | — |",
+            "| M01 | personal_information | 待用户选择具体任务 | P001:reading:core, P001:writing:follow_up | `same_session_passed` | — | — |",
         )
         report = validate_workspace.validate(self.workspace)
         self.assert_error_contains(report, "passed mission cannot use unresolved '胜利条件'")
@@ -2035,6 +2045,7 @@ class ValidateWorkspaceTests(unittest.TestCase):
         first_learning = today - timedelta(days=1)
         self.set_target_script("hangul")
         self.set_lesson_date(today.isoformat())
+        self.set_lesson_date(first_learning.isoformat())
         self.replace(
             "phrase-bank.md", "- 首学日期：待填写", f"- 首学日期：{first_learning.isoformat()}"
         )
@@ -2110,20 +2121,24 @@ class ValidateWorkspaceTests(unittest.TestCase):
         report = validate_workspace.validate(self.workspace)
         self.assertTrue(report.ok, report.errors)
 
-    def test_a2_ready_gate_requires_five_qualifying_travel_domains(self):
+    def test_a2_ready_gate_requires_five_qualifying_core_domains(self):
         self.set_full_retained_evidence_and_ready_missions()
         self.set_mission_state("M04", "delayed_passed", "training")
         report = validate_workspace.validate(self.workspace)
         self.assert_error_contains(
-            report, "A2-style ready state requires at least 5 unique qualifying travel domains"
+            report, "A2-style ready state requires at least 5 unique qualifying A2 core domains"
         )
 
-    def test_a2_ready_gate_counts_only_canonical_travel_domains(self):
+    def test_a2_ready_gate_counts_only_canonical_core_domains(self):
         self.set_full_retained_evidence_and_ready_missions()
-        self.replace("progress.md", "| M04 | shopping |", "| M04 | sightseeing |")
+        self.replace(
+            "progress.md",
+            "| M04 | time_place_directions |",
+            "| M04 | user_specific_project |",
+        )
         report = validate_workspace.validate(self.workspace)
         self.assert_error_contains(
-            report, "A2-style ready state requires at least 5 unique qualifying travel domains"
+            report, "A2-style ready state requires at least 5 unique qualifying A2 core domains"
         )
 
     def test_a2_ready_gate_requires_communication_repair_domain(self):
@@ -2148,7 +2163,7 @@ class ValidateWorkspaceTests(unittest.TestCase):
             report, "qualifying communication_repair mission requires a repair evidence requirement"
         )
 
-    def test_a2_ready_gate_requires_distinct_core_phrase_per_travel_domain(self):
+    def test_a2_ready_gate_requires_distinct_core_phrase_per_core_domain(self):
         self.set_full_retained_evidence_and_ready_missions()
         replacements = (
             ("P002:reading:core", "P001:reading:core"),
@@ -2161,7 +2176,7 @@ class ValidateWorkspaceTests(unittest.TestCase):
         report = validate_workspace.validate(self.workspace)
         self.assert_error_contains(
             report,
-            "A2-style ready state requires at least 5 qualifying travel domains with distinct core phrase identities",
+            "A2-style ready state requires at least 5 qualifying A2 core domains with distinct core phrase identities",
         )
 
     def test_a2_ready_gate_rejects_exactly_cloned_core_phrase_identities(self):
@@ -2173,7 +2188,7 @@ class ValidateWorkspaceTests(unittest.TestCase):
         report = validate_workspace.validate(self.workspace)
         self.assert_error_contains(
             report,
-            "A2-style ready state requires at least 5 qualifying travel domains with distinct core phrase identities",
+            "A2-style ready state requires at least 5 qualifying A2 core domains with distinct core phrase identities",
         )
 
     def test_a2_ready_gate_normalizes_whitespace_and_invisible_clone_identity(self):
@@ -2189,7 +2204,7 @@ class ValidateWorkspaceTests(unittest.TestCase):
         report = validate_workspace.validate(self.workspace)
         self.assert_error_contains(
             report,
-            "A2-style ready state requires at least 5 qualifying travel domains with distinct core phrase identities",
+            "A2-style ready state requires at least 5 qualifying A2 core domains with distinct core phrase identities",
         )
 
     def test_a2_ready_gate_requires_retained_exact_requirement_for_all_dimensions(self):
@@ -2217,7 +2232,7 @@ class ValidateWorkspaceTests(unittest.TestCase):
         self.set_full_retained_evidence_and_ready_missions()
         self.replace(
             "progress.md",
-            "| A2S01 | `evidence_consistent_in_tested_tasks` | transport, lodging, eating, shopping, communication_repair | listening, spoken_production, reading, writing, interaction, pronunciation | M03 | 证据与已测试旅行任务中的 A2 风格表现一致；正式 CEFR 未确认 |",
+            "| A2S01 | `evidence_consistent_in_tested_tasks` | personal_information, routines_immediate_environment, needs_transactions, time_place_directions, communication_repair | listening, spoken_production, reading, writing, interaction, pronunciation | M03 | 证据与已测试任务中的 A2 风格表现一致；正式 CEFR 未确认 |",
             "| A2S01 | `evidence_consistent_in_tested_tasks` | — | — | — | — |",
         )
         report = validate_workspace.validate(self.workspace)
@@ -2243,27 +2258,27 @@ class ValidateWorkspaceTests(unittest.TestCase):
         self.set_full_retained_evidence_and_ready_missions()
         self.replace(
             "progress.md",
-            "transport, lodging, eating, shopping, communication_repair",
-            "transport, lodging, eating, basic_help, moon, communication_repair",
+            "personal_information, routines_immediate_environment, needs_transactions, time_place_directions, communication_repair",
+            "personal_information, routines_immediate_environment, needs_transactions, short_texts_writing, moon, communication_repair",
         )
         report = validate_workspace.validate(self.workspace)
         self.assert_error_contains(
-            report, "A2-style summary travel domain 'basic_help' is not qualifying"
+            report, "A2-style summary core domain 'short_texts_writing' is not qualifying"
         )
         self.assert_error_contains(
-            report, "invalid A2-style summary travel domain 'moon'"
+            report, "invalid A2-style summary core domain 'moon'"
         )
 
     def test_a2_ready_summary_requires_five_domains_and_communication_repair(self):
         self.set_full_retained_evidence_and_ready_missions()
         self.replace(
             "progress.md",
-            "transport, lodging, eating, shopping, communication_repair",
-            "transport; lodging; eating; shopping",
+            "personal_information, routines_immediate_environment, needs_transactions, time_place_directions, communication_repair",
+            "personal_information; routines_immediate_environment; needs_transactions; time_place_directions",
         )
         report = validate_workspace.validate(self.workspace)
         self.assert_error_contains(
-            report, "A2-style summary requires at least 5 unique qualifying travel domains"
+            report, "A2-style summary requires at least 5 unique qualifying A2 core domains"
         )
         self.assert_error_contains(
             report, "A2-style summary requires communication_repair domain"
@@ -2288,8 +2303,8 @@ class ValidateWorkspaceTests(unittest.TestCase):
         self.set_full_retained_evidence_and_ready_missions()
         self.replace(
             "progress.md",
-            "| M03 | 证据与已测试旅行任务中的 A2 风格表现一致；正式 CEFR 未确认 |",
-            "| M01; M99 | 证据与已测试旅行任务中的 A2 风格表现一致；正式 CEFR 未确认 |",
+            "| M03 | 证据与已测试任务中的 A2 风格表现一致；正式 CEFR 未确认 |",
+            "| M01; M99 | 证据与已测试任务中的 A2 风格表现一致；正式 CEFR 未确认 |",
         )
         report = validate_workspace.validate(self.workspace)
         self.assert_error_contains(report, "A2-style summary mission M01 is not field_checked")
@@ -2304,7 +2319,7 @@ class ValidateWorkspaceTests(unittest.TestCase):
         self.set_full_retained_evidence_and_ready_missions()
         self.replace(
             "progress.md",
-            "| M03 | 证据与已测试旅行任务中的 A2 风格表现一致；正式 CEFR 未确认 |",
+            "| M03 | 证据与已测试任务中的 A2 风格表现一致；正式 CEFR 未确认 |",
             "| M03 | 正式达到 A2 |",
         )
         report = validate_workspace.validate(self.workspace)

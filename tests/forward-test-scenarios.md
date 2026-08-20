@@ -9,8 +9,8 @@ These are protocol tests, not evidence that a human learner acquired A2. A human
 For every scenario, verify that the tutor:
 
 1. uses information already present instead of repeating intake questions;
-2. reaches one useful task within the first three tutor turns;
-3. gives playable, labelled audio before target text when spoken goals and playback are available;
+2. detects the free local voice environment as soon as the target language is known, and reaches one useful task within the first three tutor turns after the environment is ready;
+3. uses free macOS or Windows system speech first, asks before a system voice-pack or isolated online-fallback install, never requires a paid API, and gives playable, labelled audio before target text when spoken goals and playback are available;
 4. records expression/register verification separately from the audio engine or file;
 5. asks for one action at a time and reaches an observable victory condition;
 6. uses prompt levels consistently and records the actual response medium;
@@ -21,7 +21,7 @@ For every scenario, verify that the tutor:
 11. when continuing, starts with one task and completion condition rather than a progress dump or mode menu;
 12. when an error is observed, treats it as `observing` and only marks the same pattern `recurring` after two distinct real lesson dates;
 13. when micro-immersion is offered, enables it only after user agreement and never upgrades self-reported completion into ability evidence;
-14. builds each sound–script foundation target from a useful learned or planned phrase, introduces no more than one new micro-target in a travel-first lesson, and never requires a whole chart before communication;
+14. builds each sound–script foundation target from a useful learned or planned phrase, introduces no more than one new micro-target in a beginner lesson, and never requires a whole chart before communication;
 15. gives temporary transliteration an explicit reduction or fade action where applicable and schedules a concrete later no-answer retest in a changed position, word, sign, or nearby expression;
 16. treats the foundation lane as coverage and scheduling only, never as phrase, mission, or ability mastery evidence.
 
@@ -99,11 +99,25 @@ Stress points: the pure signage-reading goal enters through visible form without
 
 Stress points: run the bundled additive migration before validation; insert exactly one empty current foundation table and preserve every pre-existing line; do not infer old foundation units, evidence, or consent; a second migration run is unchanged; validate the migrated workspace before presenting the single due learner task.
 
+## F13 — Korean goal without a travel assumption
+
+> 我刚开始学韩语。
+
+Stress points: do not ask why the learner is going to Korea; detect the current OS and free Korean voice availability first, then ask one neutral goal question such as `你学韩语最想先做到什么？`; treat travel, daily life, work, study, media, reading, writing, exams, heritage, and interest as valid routes; generate and validate one free system-TTS phrase before the first spoken lesson.
+
+Run this case once on macOS and once on Windows. On macOS, expect `say` plus `afconvert`. On Windows, expect PowerShell `System.Speech` plus an installed Windows voice; if the target voice is missing, explain and request confirmation before adding the free Windows voice capability. `edge-tts` is an optional network fallback, not “Windows system voice.”
+
+## F14 — Host without audio input
+
+> 我在 WorkBuddy 里学韩语，不能上传或让模型听录音。继续第一课。
+
+Stress points: do not ask for MP3, voice-message, microphone, or recording uploads; do not advertise a pronunciation percentage; continue with playable model audio, listening discrimination, text or meaning responses, retrieval, and role-play that the host can observe. Self-reported repetition remains practice history rather than spoken-production or pronunciation evidence. If another host explicitly supports audio and the learner voluntarily supplies it, feedback stays qualitative and limited to features actually heard.
+
 ## Human pilot gate
 
 Before making a learning-effect claim, run a small human pilot that includes:
 
-- an intake baseline and predeclared personal travel missions;
+- an intake baseline and predeclared personal A2 tasks aligned with the learner's goal;
 - multiple sessions with real elapsed time;
 - unseen voices, texts, numbers, locations, and follow-ups;
 - separate listening, spoken production, interaction, reading, practical writing, and pronunciation observations;

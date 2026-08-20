@@ -113,7 +113,7 @@ ERROR_CATEGORIES = (
 ERROR_PATTERN_STATES = ("observing", "recurring", "resolved")
 MICRO_IMMERSION_STATES = ("off", "on")
 A2_SCREEN_STATES = ("not_ready", "evidence_consistent_in_tested_tasks")
-A2_READY_CONCLUSION = "证据与已测试旅行任务中的 A2 风格表现一致；正式 CEFR 未确认"
+A2_READY_CONCLUSION = "证据与已测试任务中的 A2 风格表现一致；正式 CEFR 未确认"
 A2_NOT_READY_CONCLUSION = "只报告单项任务的实际证据阶梯"
 FOUNDATION_TYPES = (
     "symbol_sound",
@@ -136,14 +136,14 @@ FOUNDATION_FADE_TARGETS = {
     "accessibility_required": ("accessibility_required", "none"),
 }
 FOUNDATION_ANCHOR_FIELDS = ("情境", "目标表达", "含义或交际功能")
-TRAVEL_DOMAINS = (
-    "transport",
-    "lodging",
-    "eating",
-    "shopping",
-    "directions_local_geography",
+A2_CORE_DOMAINS = (
+    "personal_information",
+    "routines_immediate_environment",
+    "needs_transactions",
+    "time_place_directions",
+    "preferences_social_exchange",
     "communication_repair",
-    "basic_help",
+    "short_texts_writing",
 )
 
 PROFILE_FIELDS = (
@@ -1376,12 +1376,12 @@ def validate_mission_map(
     errors: list[str],
 ) -> tuple[MissionRecord, ...]:
     table = find_table(
-        "progress.md", lines, 0, len(lines), MISSION_HEADER, errors, "travel mission map"
+        "progress.md", lines, 0, len(lines), MISSION_HEADER, errors, "A2 task map"
     )
     if table is None:
         return ()
     if not table.rows:
-        errors.append("progress.md:travel mission map: must contain at least one mission row")
+        errors.append("progress.md:A2 task map: must contain at least one mission row")
         return ()
 
     seen: dict[str, int] = {}
@@ -1544,13 +1544,13 @@ def validate_a2_style_screen(
         mission
         for mission in missions
         if mission.state in {"delayed_passed", "field_checked"}
-        and mission.domain in TRAVEL_DOMAINS
+        and mission.domain in A2_CORE_DOMAINS
     )
     domains = {mission.domain for mission in qualifying}
     if len(domains) < 5:
         errors.append(
             "progress.md:A2-style screen: A2-style ready state requires at least 5 unique "
-            "qualifying travel domains"
+            "qualifying A2 core domains"
         )
     if "communication_repair" not in domains:
         errors.append(
@@ -1593,14 +1593,14 @@ def validate_a2_style_screen(
     summary_domains = summary_items("达标任务域")
     valid_summary_domains: set[str] = set()
     for domain in summary_domains:
-        if domain not in TRAVEL_DOMAINS:
+        if domain not in A2_CORE_DOMAINS:
             errors.append(
-                f"progress.md: line {line_number}: invalid A2-style summary travel domain "
+                f"progress.md: line {line_number}: invalid A2-style summary core domain "
                 f"'{domain}'"
             )
         elif domain not in domains:
             errors.append(
-                f"progress.md: line {line_number}: A2-style summary travel domain '{domain}' "
+                f"progress.md: line {line_number}: A2-style summary core domain '{domain}' "
                 "is not qualifying"
             )
         else:
@@ -1608,7 +1608,7 @@ def validate_a2_style_screen(
     if len(valid_summary_domains) < 5:
         errors.append(
             "progress.md:A2-style screen: A2-style summary requires at least 5 unique "
-            "qualifying travel domains"
+            "qualifying A2 core domains"
         )
     if "communication_repair" not in valid_summary_domains:
         errors.append(
@@ -1648,7 +1648,7 @@ def validate_a2_style_screen(
     if distinct_core_assignments < 5:
         errors.append(
             "progress.md:A2-style screen: A2-style ready state requires at least 5 "
-            "qualifying travel domains with distinct core phrase identities"
+            "qualifying A2 core domains with distinct core phrase identities"
         )
 
     retained_dimensions: set[str] = set()

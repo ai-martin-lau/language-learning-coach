@@ -97,6 +97,38 @@ class MigrateWorkspaceTests(unittest.TestCase):
         self.assertFalse(migrate_workspace.migrate(self.workspace))
         self.assertEqual(after_first_run, self.progress.read_bytes())
 
+    def test_renames_legacy_task_map_heading_without_changing_rows(self):
+        before = self.progress.read_bytes().replace(
+            migrate_workspace.MISSION_HEADING,
+            migrate_workspace.LEGACY_MISSION_HEADING,
+            1,
+        )
+        self.progress.write_bytes(before)
+
+        self.assertTrue(migrate_workspace.migrate(self.workspace))
+
+        expected = before.replace(
+            migrate_workspace.LEGACY_MISSION_HEADING,
+            migrate_workspace.MISSION_HEADING,
+            1,
+        )
+        self.assertEqual(expected, self.progress.read_bytes())
+
+    def test_renames_heading_and_adds_foundation_in_one_run(self):
+        before = self.make_legacy().replace(
+            migrate_workspace.MISSION_HEADING,
+            migrate_workspace.LEGACY_MISSION_HEADING,
+            1,
+        )
+        self.progress.write_bytes(before)
+
+        self.assertTrue(migrate_workspace.migrate(self.workspace))
+
+        after = self.progress.read_bytes()
+        self.assertIn(migrate_workspace.MISSION_HEADING, after)
+        self.assertNotIn(migrate_workspace.LEGACY_MISSION_HEADING, after)
+        self.assertIn(migrate_workspace.FOUNDATION_TABLE_HEADER, after)
+
     def test_missing_progress_is_an_input_error_without_write(self):
         self.progress.unlink()
 

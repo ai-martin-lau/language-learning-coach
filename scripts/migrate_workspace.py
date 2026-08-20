@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Add the sound-script foundation section to a legacy workspace."""
+"""Apply lossless structural upgrades to a legacy learning workspace."""
 
 from __future__ import annotations
 
@@ -16,6 +16,8 @@ EXIT_INVALID = 2
 EXIT_INPUT = 3
 
 PROGRESS_FILENAME = "progress.md"
+LEGACY_MISSION_HEADING = "## 旅行任务地图".encode()
+MISSION_HEADING = "## A2 任务地图".encode()
 FOUNDATION_HEADING = "## 声音—文字基础支线".encode()
 FOUNDATION_TABLE_HEADER = (
     "| 支线编号 | 类型 | 学习单位或规律 | 锚定语块 | 当前转写支架 | "
@@ -96,32 +98,52 @@ def migrate(workspace: Path) -> bool:
         raise OSError(f"{PROGRESS_FILENAME} is not a regular file")
 
     original = progress.read_bytes()
-    headings = line_offsets(original, FOUNDATION_HEADING)
-    headers = line_offsets(original, FOUNDATION_TABLE_HEADER)
+    legacy_mission_headings = line_offsets(original, LEGACY_MISSION_HEADING)
+    mission_headings = line_offsets(original, MISSION_HEADING)
+    if len(legacy_mission_headings) > 1 or len(mission_headings) > 1:
+        raise MigrationError("progress.md has duplicate A2 task map headings")
+    if legacy_mission_headings and mission_headings:
+        raise MigrationError("progress.md has both legacy and current A2 task map headings")
+
+    migrated = original
+    changed = False
+    if legacy_mission_headings:
+        start = legacy_mission_headings[0]
+        migrated = (
+            migrated[:start]
+            + MISSION_HEADING
+            + migrated[start + len(LEGACY_MISSION_HEADING) :]
+        )
+        changed = True
+
+    headings = line_offsets(migrated, FOUNDATION_HEADING)
+    headers = line_offsets(migrated, FOUNDATION_TABLE_HEADER)
     if headers:
         if len(headers) == 1 and len(headings) == 1 and headings[0] < headers[0]:
-            return False
+            if changed:
+                atomic_write(progress, migrated)
+            return changed
         raise MigrationError(
             "progress.md has a malformed or duplicate foundation section"
         )
     if headings:
         raise MigrationError("progress.md has a foundation heading but no foundation table")
 
-    anchors = line_offsets(original, RETEST_HEADING)
+    anchors = line_offsets(migrated, RETEST_HEADING)
     if not anchors:
         raise MigrationError("progress.md is missing insertion anchor '## 复测队列'")
     if len(anchors) > 1:
         raise MigrationError("progress.md has multiple insertion anchors '## 复测队列'")
 
     insertion = current_foundation_section()
-    migrated = original[: anchors[0]] + insertion + original[anchors[0] :]
+    migrated = migrated[: anchors[0]] + insertion + migrated[anchors[0] :]
     atomic_write(progress, migrated)
     return True
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Add the current empty sound-script foundation table to a legacy workspace."
+        description="Upgrade legacy task-map headings and add the current sound-script foundation table."
     )
     parser.add_argument("workspace", type=Path)
     args = parser.parse_args(argv)

@@ -2,49 +2,39 @@
 
 # Language Learning Coach
 
-**Start with one real travel task. Build verifiable A2 foundations through the shortest practical route your performance supports.**
-
-![An illustrated journey through a train station, hotel, and restaurant](assets/readme/travel-hero.webp)
+**Start from zero. Prepare free audio, choose one real goal, and build verifiable A2 foundations through the shortest practical route your performance supports.**
 
 Language Learning Coach is an adaptive Codex Skill for learning well-resourced modern languages through real tasks, reliable input, useful phrases, active recall, interaction, focused feedback, and delayed retests.
 
-It is designed first for travel languages such as French, German, Italian, Spanish, Portuguese, Korean, Japanese, Arabic, and English. The language, regional variety, writing system, time available, and what you can actually do all change the lesson.
+It supports well-resourced modern languages such as French, German, Italian, Spanish, Portuguese, Korean, Japanese, Arabic, and English. Daily life, travel, work, study, exams, reading, writing, media, heritage, and personal interest are all valid routes. The language, regional variety, writing system, goal, time available, and what you can actually do all change the lesson.
 
 > [!IMPORTANT]
-> “Travel A2” is this project's training route, not an official CEFR sub-level or a certificate. A2 covers simple, direct exchanges in familiar and routine situations; the CEFR places coping with most situations likely to arise while travelling at B1. The coach therefore targets **more confident performance in common, predictable travel tasks**, not stress-free handling of every trip or emergency. See the Council of Europe's [global scale](https://www.coe.int/en/web/common-european-framework-reference-languages/table-1-cefr-3.3-common-reference-levels-global-scale) and [spoken-language descriptors](https://www.coe.int/en/web/common-european-framework-reference-languages/table-3-cefr-3.3-common-reference-levels-qualitative-aspects-of-spoken-language-use).
+> The internal A2-style screen is not an official CEFR sub-level or certificate. A2 covers simple, direct exchanges in familiar and routine situations. For an optional travel route, note that the CEFR places coping with most situations likely to arise while travelling at B1; this Skill never promises stress-free handling of every trip or emergency. See the Council of Europe's [global scale](https://www.coe.int/en/web/common-european-framework-reference-languages/table-1-cefr-3.3-common-reference-levels-global-scale) and [spoken-language descriptors](https://www.coe.int/en/web/common-european-framework-reference-languages/table-3-cefr-3.3-common-reference-levels-qualitative-aspects-of-spoken-language-use).
 
 > [!NOTE]
 > This is an independent open-source project inspired by Kazuma's publicly shared learning practices. It is not official, authorized, affiliated with, or endorsed by Kazuma.
 
 ## Fast start, not a shortcut
 
-The coach shortens the distance between “I want to learn” and actually handling a ticket, check-in, order, direction, or communication breakdown. The first lesson selects one likely travel task, teaches only the one to three complete phrases needed for it, and asks you to use them immediately.
+The coach shortens the distance between “I want to learn” and completing one useful task. Once the target language is known, it checks a free voice environment before a spoken lesson, asks what you want to achieve without assuming travel, then teaches only what the first task needs.
 
-It does not skip reliable input, changed-condition practice, or delayed retests. “Fast” means removing vocabulary lists, grammar sequences, generic calendars, and material unrelated to your next trip—not promising instant A2, a fixed completion time, or lower standards.
+It does not skip reliable input, changed-condition practice, or delayed retests. “Fast” means removing vocabulary lists, grammar sequences, generic calendars, and material unrelated to your current goal—not promising instant A2, a fixed completion time, or lower standards.
 
-## Learn for the trip, not for the streak
+## A2 core tasks, with travel as an option
 
-![Six core travel practice areas: transport, accommodation, food, directions, shopping, and communication repair](assets/readme/travel-scenarios.svg)
+The internal task map uses seven broad A2 domains: personal information; routines and the immediate environment; needs and transactions; time, place, and directions; preferences and social exchange; communication repair; and short texts and writing. Your real goal can add custom tasks, while the conservative internal screen counts only these shared core domains.
 
-The default travel route tracks seven outcomes. The visual shows the six everyday interaction areas; a seventh, safety-limited basic-help outcome is included in the route:
+![Optional travel practice areas: transport, accommodation, food, directions, shopping, and communication repair](assets/readme/travel-scenarios.svg)
 
-- **Transport:** ask about tickets, platforms, times, routes, and changes.
-- **Accommodation:** check in, confirm details, and describe a simple problem.
-- **Food:** order, state preferences, understand a follow-up, and pay.
-- **Directions:** ask, identify landmarks, and confirm that you understood.
-- **Shopping:** handle price, quantity, size, availability, and payment.
-- **Communication repair:** ask someone to repeat, slow down, write, point, or rephrase.
-- **Basic help:** handle a pharmacy, lost-property, or other non-emergency request without treating serious emergencies as A2 tasks.
+If travel is your goal, the coach maps transport, accommodation, food, directions, shopping, repair, and basic non-emergency help into the relevant core domains. Serious medical, legal, immigration, and safety emergencies are not presented as situations that A2 alone makes safe to handle independently.
 
-Each active phrase is stored with your version, a replaceable slot, a likely follow-up, and a repair expression. The goal is not a frozen phrasebook: it is completing the task when one detail changes.
-
-Serious medical, legal, immigration, and safety emergencies are not presented as situations that A2 alone makes safe to handle independently.
+Each active phrase is stored with your version, a replaceable slot, a likely follow-up, and a repair expression when applicable. The goal is not a frozen phrasebook: it is completing the task when one detail changes.
 
 ## Start in one line
 
 ```text
-Use $language-learning-coach. I am starting Japanese from zero, have 15 minutes
-a day, and want to handle basic travel conversations in Japan.
+Use $language-learning-coach. I am starting Korean from zero. Prepare a free
+voice environment first, then help me choose a useful first goal.
 ```
 
 If you have not named a language, the first reply contains only:
@@ -53,7 +43,7 @@ If you have not named a language, the first reply contains only:
 What language do you want to learn?
 ```
 
-Then the coach asks only one question at a time—and only when the answer changes the next lesson. You begin a small task instead of receiving a long questionnaire or generic calendar.
+Once the language is known, the coach checks the free voice environment and asks a neutral goal question such as “What do you most want to do first in Korean?” It asks only one question at a time—and only when the answer changes the next lesson.
 
 Other useful starts:
 
@@ -69,9 +59,9 @@ I only have five minutes today.
 
 ## The shortest useful route is adaptive
 
-![An eight-stage loop from a real travel task to reliable input, retrieval, interaction, feedback, and delayed transfer](assets/readme/adaptive-loop.svg)
+![An eight-stage loop from a real task to reliable input, retrieval, interaction, feedback, and delayed transfer](assets/readme/adaptive-loop.svg)
 
-For a spoken travel goal, a typical lesson moves through:
+For a spoken goal, a typical lesson moves through:
 
 1. choose one real task and the target variety;
 2. hear a complete, classified model before seeing the answer;
@@ -86,14 +76,14 @@ Every continuation starts with one visible next task and a concrete completion c
 
 You can also opt into a roughly 30-second micro-immersion action attached to something you already do, such as opening a map or checking a booking. It adds no automatic new material, and reporting that you completed it records practice rather than upgrading ability evidence.
 
-The order changes for reading-only or writing goals, accessibility needs, a new script, tone or pitch contrasts, rich inflection, honorifics, regional varieties, or diglossia. Travel is the primary route; work, exams, reading, writing, media, and heritage goals remain supported when reliable resources exist.
+The order changes for reading-only or writing goals, accessibility needs, a new script, tone or pitch contrasts, rich inflection, honorifics, regional varieties, or diglossia. Travel, work, study, exams, reading, writing, media, heritage, daily life, and interest-led goals are peer routes when reliable resources exist.
 
 ## One micro-lesson, four visible moves
 
 ![A four-panel lesson: hear a complete model, attempt the task, receive one focused correction, and retry with a changed condition](assets/readme/lesson-storyboard.svg)
 
 1. **Model:** hear the whole expression from a classified source; text follows when appropriate.
-2. **Attempt:** use it inside a ticket counter, hotel desk, restaurant, shop, or direction task.
+2. **Attempt:** use it inside the learner's current real task.
 3. **Focused feedback:** preserve the exchange and correct only what most affects the task.
 4. **Retry:** complete it again, then change one condition so recall—not copying—does the work.
 
@@ -111,11 +101,19 @@ The evidence ladder is:
 supported → independent → changed condition → delayed retention
 ```
 
-The workspace records the task, prompt level, evidence environment, **response medium**, result, date, and next retest. That distinction prevents a typed romanization, an unobserved “I said it,” or a task still waiting for an answer from being stored as audible speech or writing. A travel mission moves from training to same-session, changed-condition, delayed, and real-world checks only when matching evidence exists.
+The workspace records the task, prompt level, evidence environment, **response medium**, result, date, and next retest. That distinction prevents a typed romanization, an unobserved “I said it,” or a task still waiting for an answer from being stored as audible speech or writing. An A2 task moves from training to same-session, changed-condition, delayed, and real-world checks only when matching evidence exists.
 
-One successful mission is not A2. The internal A2-style screen passes only after at least five of the seven defined travel domains reach delayed or real-world checks with distinct core phrases, communication repair is included, all six tracked abilities have retained evidence linked to exact mission requirements, and at least one mission passes a real-person or real-world check. Only then may the coach say that the evidence is consistent with A2-style performance **in the tested tasks** and name every gap. This is still not a CEFR result; only an appropriate external assessment can establish one. How quickly you progress depends on the language, your starting point, practice time, resource quality, and performance that survives transfer and delay.
+One successful task is not A2. The internal A2-style screen passes only after at least five of the seven defined core domains reach delayed or real-world checks with distinct core phrases, communication repair is included, all six tracked abilities have retained evidence linked to exact task requirements, and at least one task passes a real-person or real-world check. Only then may the coach say that the evidence is consistent with A2-style performance **in the tested tasks** and name every gap. This is still not a CEFR result; only an appropriate external assessment can establish one.
 
 ## Sound sources are never hidden
+
+For a spoken course, environment preparation is the first operational step:
+
+- **macOS:** use the free built-in `say` voice and `afconvert`; if the target voice is missing, download a free system voice in macOS settings.
+- **Windows:** use the free installed Windows voice through PowerShell `System.Speech`; if the target voice is missing, explain the exact Windows language speech capability and ask before installing it.
+- **Optional online fallback:** only when local speech is unavailable, ask before creating an isolated workspace virtual environment with free `edge-tts` and its converter. It needs internet, is not Windows system speech, and may change or stop working.
+
+No route requires an API key, credit card, paid cloud TTS, subscription, or global Python package install. The first complete phrase is generated and technically validated before the spoken lesson begins. Pure reading, pure writing, or explicitly text-only goals may skip this step.
 
 For spoken goals, a new phrase is heard before its written answer when playable audio is available. Every model is classified:
 
@@ -130,9 +128,11 @@ For TTS, the workspace separately records the expression/register check, target 
 
 Local WAV files are structurally validated before delivery. Technical validity never substitutes for source reliability, correct variety, actual playback, or pronunciation assessment.
 
+The coach does not require an MP3 or recording upload and does not advertise a pronunciation score. Only when the host explicitly supports audio input and the learner voluntarily supplies it may the coach give limited qualitative feedback on features it can actually hear.
+
 ## Installation
 
-You need Codex with local Skill support and Python 3 for the bundled audio and workspace validators. The audio validator accepts classic uncompressed RIFF PCM WAV; convert other formats first. The Git method also requires Git.
+You need a host with local Skill support and Python 3 for the bundled TTS, audio, migration, and workspace tools. Spoken lessons also need either macOS system speech, Windows system speech, or user-approved access to the free isolated online fallback. The delivery validator accepts classic uncompressed RIFF PCM WAV. The Git method also requires Git.
 
 ### Bundled Skill installer
 
@@ -185,12 +185,12 @@ language-learning/<language-slug>/
 ├── profile.md
 ├── phrase-bank.md
 ├── function-map.md
-└── progress.md       # missions, sound–script lane, retests, and lesson evidence
+└── progress.md       # A2 tasks, sound–script lane, retests, and lesson evidence
 ```
 
 These readable Markdown files store course-relevant goals, constraints, habit anchors, contextualized expressions, audio source classes, per-ability evidence, starter-function coverage, sound–script foundation coverage, recurring-error observations, optional micro-immersion, and scheduled retests. They remain in the user's workspace, not the installed Skill directory. A bundled validator checks structure and internal consistency without claiming that the recorded learning result is true.
 
-Before validating an older workspace that lacks the sound–script table, the bundled additive migrator inserts one empty current table and preserves existing lessons, evidence, and notes; it never infers past foundation learning.
+Before validating an older workspace, the bundled additive migrator renames the legacy travel-map heading, inserts a missing empty sound–script table, and preserves existing task rows, lessons, evidence, and notes. It never reclassifies old travel domains or infers past foundation learning.
 
 The repository contains no telemetry, account integration, or background service. Codex and user-authorized tools may access external sources when a lesson needs reliable language material; those products' privacy rules still apply.
 
@@ -217,7 +217,10 @@ The README's use of visual navigation was informed by the language-learning sect
 │   ├── language-adaptation.md       # Cross-language feature adaptation
 │   └── session-protocols.md         # Lessons, feedback, review, and state
 ├── scripts/validate_audio.py        # Local PCM WAV delivery validator
+├── scripts/generate_tts.py          # Free macOS, Windows, and optional online TTS
+├── scripts/migrate_workspace.py     # Lossless legacy workspace migration
 ├── scripts/validate_workspace.py    # Markdown learning-state validator
+├── tests/test_generate_tts.py       # Cross-platform TTS regression tests
 ├── tests/test_validate_audio.py     # Audio validator regression tests
 ├── tests/test_validate_workspace.py # Workspace validator regression tests
 └── docs/plans/                      # Design records
@@ -225,7 +228,7 @@ The README's use of visual navigation was informed by the language-learning sect
 
 ## Contributing
 
-Issues and pull requests are welcome, especially for source-backed corrections, better adaptation for mainstream language varieties and travel tasks, clearer safety and evidence boundaries, and natural improvements to the five README translations.
+Issues and pull requests are welcome, especially for source-backed corrections, better adaptation for mainstream language varieties and real A2 tasks, clearer safety and evidence boundaries, and natural improvements to the five README translations.
 
 Use English `README.md` as the content source of truth and update all affected translations in the same pull request. Do not add fixed-time A2 claims, unsupported fluency promises, invented native-speaker consensus, fake testimonials, or claims of Kazuma affiliation.
 

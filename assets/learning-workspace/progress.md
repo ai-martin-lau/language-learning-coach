@@ -7,7 +7,7 @@
 - 最小完成任务：待填写
 - 建议时长：待填写
 
-## 旅行任务地图
+## A2 任务地图
 
 <!--
 只启用与用户目标有关的任务。状态依次为 planned／training／same_session_passed／changed_condition_passed／delayed_passed／field_checked；不选写 not_selected。
@@ -18,20 +18,20 @@
 
 | 任务编号 | 任务域 | 胜利条件 | 证据要求 | 状态 | 最近证据 | 下一变化 |
 |---|---|---|---|---|---|---|
-| M01 | transport | 待用户选择具体任务 | — | `not_selected` | — | — |
-| M02 | lodging | 待用户选择具体任务 | — | `not_selected` | — | — |
-| M03 | eating | 待用户选择具体任务 | — | `not_selected` | — | — |
-| M04 | shopping | 待用户选择具体任务 | — | `not_selected` | — | — |
-| M05 | directions_local_geography | 待用户选择具体任务 | — | `not_selected` | — | — |
+| M01 | personal_information | 待用户选择具体任务 | — | `not_selected` | — | — |
+| M02 | routines_immediate_environment | 待用户选择具体任务 | — | `not_selected` | — | — |
+| M03 | needs_transactions | 待用户选择具体任务 | — | `not_selected` | — | — |
+| M04 | time_place_directions | 待用户选择具体任务 | — | `not_selected` | — | — |
+| M05 | preferences_social_exchange | 待用户选择具体任务 | — | `not_selected` | — | — |
 | M06 | communication_repair | 待用户选择具体任务 | — | `not_selected` | — | — |
-| M07 | basic_help | 待用户选择具体任务 | — | `not_selected` | — | — |
+| M07 | short_texts_writing | 待用户选择具体任务 | — | `not_selected` | — | — |
 
 ## A2 风格内部筛查
 
 <!--
 这不是 CEFR 证书。状态只用 not_ready／evidence_consistent_in_tested_tasks。not_ready 时前三个摘要格保留 `—`，结论固定为模板中的保守文案。
-后者要求至少五个不同旅行任务域达到 delayed_passed 或 field_checked，包含 communication_repair，六个能力维度都有任务地图精确引用的 retained 证据，并至少有一个 field_checked。验证器通过前不得输出 A2-style 结论。
-通过时，达标任务域用 canonical 域名逗号分隔，能力覆盖用六个维度枚举逗号分隔，现实检查填写实际 `field_checked` 的任务编号；结论固定写 `证据与已测试旅行任务中的 A2 风格表现一致；正式 CEFR 未确认`。不得手写与任务地图不一致或更强的结论。
+后者要求至少五个模板定义的不同 A2 核心域达到 delayed_passed 或 field_checked，包含 communication_repair，六个能力维度都有任务地图精确引用的 retained 证据，并至少有一个 field_checked。自定义任务域可以用于学习，但不计入内部筛查。验证器通过前不得输出 A2-style 结论。
+通过时，达标任务域用 canonical 域名逗号分隔，能力覆盖用六个维度枚举逗号分隔，现实检查填写实际 `field_checked` 的任务编号；结论固定写 `证据与已测试任务中的 A2 风格表现一致；正式 CEFR 未确认`。不得手写与任务地图不一致或更强的结论。
 -->
 
 | 筛查编号 | 状态 | 达标任务域 | 能力覆盖 | 现实检查 | 结论 |
@@ -41,7 +41,7 @@
 ## 声音—文字基础支线
 
 <!--
-这里只记录累积覆盖与复测安排，不记录掌握等级，也不能推进语块、旅行任务或 A2 筛查。实际的听、说、读、写、互动和发音证据仍写入 phrase-bank.md。
+这里只记录累积覆盖与复测安排，不记录掌握等级，也不能推进语块、A2 任务或 A2 筛查。实际的听、说、读、写、互动和发音证据仍写入 phrase-bank.md。
 支线编号从 S01 起；类型只用 symbol_sound／spelling_sound／stress／connected_speech／form_component。前四类必须锚定已有完整可靠音源；只做整词字形、意义或构件识别时用 form_component，不暗示已经学到读音。
 学习单位或规律写 1–5 个用分号分隔的小单位，或一条紧凑规律；锚定语块只填一个已有 P 编号。
 当前转写支架只用 full／partial／none／accessibility_required。复测任务必须把答案可见性写为 hidden，并另填真实变化条件；复测转写支架须从 full 降为 partial／none、从 partial 降为 none、保持 none，只有 accessibility_required 可保持或降为 none。

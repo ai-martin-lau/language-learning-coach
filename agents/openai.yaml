@@ -1,4 +1,4 @@
 interface:
-  display_name: "小语种旅行 A2 教练"
-  short_description: "从第一轮真实任务开始，建立可验证的旅行 A2 基础沟通能力"
-  default_prompt: "使用 $language-learning-coach 帮我学习一门旅行语言，从下一次旅行最可能遇到的一个真实任务开始。"
+  display_name: "零基础 A2 语言教练"
+  short_description: "先准备免费声音环境，再沿最短实用路线建立可验证的 A2 基础"
+  default_prompt: "使用 $language-learning-coach 帮我从零开始学习一门语言，先准备免费声音环境，再根据我的目标开始第一课。"
